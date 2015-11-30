@@ -1,11 +1,14 @@
 # coding=utf-8
 
-from lib.base_handler import BaseHandler
+from tornado.web import authenticated
+
+from libs.base_handler import BaseHandler
 
 
 class HomeHandler(BaseHandler):
 
-    route_map = '/'
+    route_map = r'/'
 
+    @authenticated
     def get(self):
-        self.write("Hello, world")
+        self.write(self.current_user)

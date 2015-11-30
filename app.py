@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
 # coding=utf8
 
-import os
 import inspect
 import importlib
 from tornado.web import Application
-from tornado.web import URLSpec
 
 import settings
-from lib.base_handler import BaseHandler
+from libs.base_handler import BaseHandler
+
 
 def get_handler_from_module(module):
     handlers = []
@@ -22,15 +21,29 @@ def get_handler_from_module(module):
         for attr_name in attrs:
             if not attr_name.startswith('_'):
                 attr = module.__dict__[attr_name]
-                if issubclass(attr, BaseHandler) and attr.route_map:
+                if inspect.isclass(attr) \
+                        and issubclass(attr, BaseHandler) \
+                        and attr.route_map:
                     handlers.append(attr.get_url_spec())
     return handlers
 
 
-handlers = []
-#handlers.append(main.HomeHandler.get_url_spec())
+app_handlers = []
 for package_name in settings.handler_packages:
     package = importlib.import_module(package_name)
-    handlers += get_handler_from_module(package)
+    app_handlers += get_handler_from_module(package)
+app_handlers = list(set(app_handlers))
 
-app = Application(handlers)
+app_settings = {
+    'debug': settings.debug,
+    'auto_reload': True,
+    'compress_response': True,
+    'servce_traceback': True,
+    'cookie_secret': settings.cookie_secret,
+    'xsrf_cookies': False,
+    'static_path': settings.static_root,
+    'static_url_prefix': settings.static_url,
+    'login_url': settings.auth_login_url,
+}
+
+app = Application(app_handlers, **app_settings)
