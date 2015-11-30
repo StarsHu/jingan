@@ -1,3 +1,1 @@
-# coding=utf-8
-
-urls = []
+__all__ = ['main']
