@@ -6,6 +6,13 @@ debug = True
 
 port = 8000
 
+database = {
+    'name': 'jingan',
+    'user': 'postgres',
+    'password': '123456',
+    'host': '127.0.0.1',
+}
+
 handler_packages = [
     'libs.auth',
     'handlers',

@@ -2,18 +2,25 @@
 # coding=utf8
 
 import logging
+import asyncio
 from tornado.httpserver import HTTPServer
-from tornado.ioloop import IOLoop
 from tornado.options import parse_command_line
+from tornado.platform.asyncio import AsyncIOMainLoop
 
 import settings
+
+AsyncIOMainLoop().install()
+
 from app import app
 
 http_server = HTTPServer(app, xheaders=True)
 http_server.listen(settings.port)
 
+loop = asyncio.get_event_loop()
+loop.run_until_complete(app.db.connect_async())
+
 if __name__ == "__main__":
     logger = logging.getLogger("tornado.application")
     parse_command_line()
     logger.info('Server running on http://0.0.0.0:%d' % (settings.port))
-    IOLoop.instance().start()
+    loop.run_forever()

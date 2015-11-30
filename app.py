@@ -7,6 +7,7 @@ from tornado.web import Application
 
 import settings
 from libs.base_handler import BaseHandler
+from models import database
 
 
 def get_handler_from_module(module):
@@ -47,3 +48,4 @@ app_settings = {
 }
 
 app = Application(app_handlers, **app_settings)
+app.db = database
