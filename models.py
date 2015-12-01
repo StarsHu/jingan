@@ -5,6 +5,7 @@ import peewee
 import peewee_async
 
 import settings
+from libs.base_model import BaseModel
 
 database = peewee_async.PostgresqlDatabase(
     settings.database['name'],
@@ -12,14 +13,21 @@ database = peewee_async.PostgresqlDatabase(
     password=settings.database['password'],
     host=settings.database['host']
 )
-loop = asyncio.get_event_loop()
 
 
-class User(peewee.Model):
-    name = peewee.CharField()
+class User(BaseModel):
+    name = peewee.CharField(null=False)
+    password = peewee.CharField(null=False)
+    group_id = peewee.IntegerField(null=False)
 
     class Meta:
+        db_table = 'user'
         database = database
 
-User.create_table(True)
-database.close()
+
+class Group(BaseModel):
+    name = peewee.CharField(null=False)
+
+    class Meta:
+        db_table = 'group'
+        database = database

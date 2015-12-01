@@ -16,6 +16,11 @@ from app import app
 http_server = HTTPServer(app, xheaders=True)
 http_server.listen(settings.port)
 
+# init database in debug
+if settings.debug:
+    from init_site import init_db
+    init_db()
+
 loop = asyncio.get_event_loop()
 loop.run_until_complete(app.db.connect_async())
 
