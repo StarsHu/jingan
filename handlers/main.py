@@ -11,4 +11,4 @@ class HomeHandler(BaseHandler):
 
     @authenticated
     def get(self):
-        self.write(self.current_user)
+        self.render('home.html')

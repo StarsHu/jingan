@@ -15,11 +15,12 @@ port = 8000
 # }
 
 handler_packages = [
-    'libs.auth',
     'handlers',
 ]
 
 project_root = os.path.dirname(os.path.abspath(__file__))
+
+template_root = os.path.join(project_root, 'templates/')
 
 auth_login_url = '/auth/login'
 

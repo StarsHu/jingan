@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block body %}
+    <div class="container">
+        <form class="form-signin" method="post" action="{{ request.uri }}">
+            <h2 class="form-signin-heading">净安</h2>
+            {% if errors %}
+            <div class="form-group has-error">
+            {% else %}
+            <div class="form-group">
+            {% endif %}
+                <input type="text" class="form-control" name="username" placeholder="用户名" value="{{ username }}" required autofocus> 
+                <input type="password" class="form-control" name="password" placeholder="密码" required>
+                {% if errors %}
+                {% for error in errors %}
+                <span class="help-block">{{ error }}</span>
+                {% endfor %}
+                {% endif %}
+            </div>
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" name="remember_me" checked> 7 天内免登录
+                </label>
+            </div>
+            <button class="btn btn-lg btn-primary btn-block" type="submit">登录</button>
+            {{ xsrf_form_html() }}
+        </form>
+    </div> <!-- /container -->
+{% endblock %}

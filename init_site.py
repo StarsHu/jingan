@@ -13,7 +13,7 @@ def init_db():
     User.get_or_create(
         name="cula",
         defaults={
-            'password': '123456',
+            'password': User.encode_raw_password('123456'),
             'group_id': admin_group.id
         }
     )

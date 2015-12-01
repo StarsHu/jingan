@@ -6,8 +6,9 @@ import importlib
 from tornado.web import Application
 
 import settings
-from libs.base_handler import BaseHandler
 from models import database
+from libs.base_handler import BaseHandler
+from libs.jinja import JinjaLoader
 
 
 def get_handler_from_module(module):
@@ -41,10 +42,11 @@ app_settings = {
     'compress_response': True,
     'servce_traceback': True,
     'cookie_secret': settings.cookie_secret,
-    'xsrf_cookies': False,
+    'xsrf_cookies': True,
     'static_path': settings.static_root,
     'static_url_prefix': settings.static_url,
     'login_url': settings.auth_login_url,
+    'template_loader': JinjaLoader(settings.template_root),
 }
 
 app = Application(app_handlers, **app_settings)
