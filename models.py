@@ -8,7 +8,7 @@ import peewee_async
 import settings
 from libs.base_model import BaseModel
 
-database = peewee_async.PostgresqlDatabase(
+database = peewee_async.PooledPostgresqlDatabase(
     settings.database['name'],
     user=settings.database['user'],
     password=settings.database['password'],
@@ -19,6 +19,7 @@ database = peewee_async.PostgresqlDatabase(
 class User(BaseModel):
     name = peewee.CharField(null=False)
     password = peewee.CharField(null=False)
+    last_login = peewee.DateTimeField(null=True)
     group_id = peewee.IntegerField(null=False)
 
     @classmethod
