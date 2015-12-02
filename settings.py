@@ -1,10 +1,13 @@
 # coding=utf-8
 
 import os
+import pytz
 
 debug = True
 
 port = 8000
+
+tz = pytz.UTC
 
 # Please define your database config in my_conf.py
 # database = {
@@ -22,6 +25,7 @@ project_root = os.path.dirname(os.path.abspath(__file__))
 
 template_root = os.path.join(project_root, 'templates/')
 
+auth_cookie_name = 'user'
 auth_login_url = '/auth/login'
 auth_logout_url = '/auth/logout'
 

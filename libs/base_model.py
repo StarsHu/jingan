@@ -1,8 +1,9 @@
 # coding=utf-8
 
 import datetime
-
 import peewee
+
+import settings
 
 
 class BaseModel(peewee.Model):

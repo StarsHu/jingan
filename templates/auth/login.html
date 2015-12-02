@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base/base.html" %}
 
 {% block css %}
 <link rel="stylesheet" href="{{ static_url('css/auth.css') }}" type="text/css">
@@ -7,7 +7,7 @@
 
 {% block body %}
     <div class="container">
-        <form class="form-signin" method="post" action="{{ request.uri }}">
+        <form class="form-auth" method="post" action="{{ request.uri }}">
             <h1 class="form-signin-heading">净安科技</h1>
             {% if errors %}
             <div class="form-group has-error">

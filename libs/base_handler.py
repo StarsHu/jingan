@@ -1,5 +1,7 @@
 # coding=utf-8
 
+import settings
+import json
 import logging
 from tornado.web import RequestHandler
 from tornado.web import URLSpec
@@ -18,8 +20,15 @@ class BaseHandler(RequestHandler):
         return URLSpec(cls.route_map, cls, cls.route_kwargs, cls.route_name)
 
     def get_current_user(self):
-        user = self.get_secure_cookie("user")
-        return user
+        auth_cookie = self.get_secure_cookie(settings.auth_cookie_name, None)
+        if auth_cookie:
+            try:
+                self.current_user = json.loads(
+                    str(auth_cookie, encoding='utf-8'))
+                return self.current_user
+            except:
+                pass
+        return None
 
     def prepare(self):
         pass
