@@ -1,5 +1,6 @@
 *.pyc
 *.swp
+*.db
 .ropeproject
 my_conf.py
 __pycache__

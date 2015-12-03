@@ -9,12 +9,11 @@ port = 8000
 
 tz = pytz.UTC
 
-# Please define your database config in my_conf.py
+# Please define your mongodb config in my_conf.py
 # database = {
-#     'name': 'jingan',
-#     'user': 'postgres',
-#     'password': '',
+#     'name': 'jingan_db',
 #     'host': '127.0.0.1',
+#     'post': 27017
 # }
 
 handler_packages = [

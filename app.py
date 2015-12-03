@@ -6,7 +6,6 @@ import importlib
 from tornado.web import Application
 
 import settings
-from models import database
 from libs.base_handler import BaseHandler
 from libs.jinja import JinjaLoader
 
@@ -50,4 +49,3 @@ app_settings = {
 }
 
 app = Application(app_handlers, **app_settings)
-app.db = database

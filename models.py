@@ -1,26 +1,27 @@
 # coding=utf-8
 
 import hashlib
-import asyncio
-import peewee
-import peewee_async
+from motorengine import fields
 
 import settings
-from libs.base_model import BaseModel
-
-database = peewee_async.PooledPostgresqlDatabase(
-    settings.database['name'],
-    user=settings.database['user'],
-    password=settings.database['password'],
-    host=settings.database['host']
-)
+from libs.base_doc import BaseDoc
 
 
-class User(BaseModel):
-    name = peewee.CharField(null=False)
-    password = peewee.CharField(null=False)
-    last_login = peewee.DateTimeField(null=True)
-    group_id = peewee.IntegerField(null=False)
+class User(BaseDoc):
+
+    __collection__ = 'user'
+
+    STATUS_LIST = ['ERROR', 'ACTIVE', 'DELETED']
+
+    name = fields.StringField(db_field='name', max_length=50, unique=True,
+                              required=True)
+    password = fields.StringField(db_field='password', max_length=50,
+                                  required=True)
+    last_login = fields.DateTimeField(db_field='last_login', required=False)
+    role_id = fields.StringField(db_field='role_id', max_length=50,
+                                 required=True)
+    status = fields.StringField(db_field='status', max_length=20, required=True,
+                                default="ACTIVE")
 
     @classmethod
     def encode_raw_password(cls, password):
@@ -40,14 +41,14 @@ class User(BaseModel):
     def set_password(self, password):
         self.password = self.encode_raw_password(password)
 
-    class Meta:
-        db_table = 'user'
-        database = database
 
+class Role(BaseDoc):
 
-class Group(BaseModel):
-    name = peewee.CharField(null=False)
+    __collection__ = 'role'
 
-    class Meta:
-        db_table = 'group'
-        database = database
+    STATUS_LIST = ['ERROR', 'ACTIVE', 'DELETED']
+    key = fields.StringField(db_field='key', max_length=50, unique=True,
+                             required=True)
+    name = fields.StringField(db_field='name', max_length=50, required=True)
+    status = fields.StringField(db_field='status', max_length=20, required=True,
+                                default="ACTIVE")

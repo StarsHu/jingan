@@ -1,23 +1,31 @@
 # coding=utf-8
 
+from tornado.gen import coroutine
 
+
+@coroutine
 def init_db():
 
-    from models import database
-    from models import User, Group
+    from models import User, Role
 
-    Group.create_table(True)
-    admin_group, created = Group.get_or_create(name="管理员")
-    salesmanager_group, created = Group.get_or_create(name="销售人员")
-    warehousekeeper_group, created = Group.get_or_create(name="仓库管理员")
+    role_admin = yield Role.objects.get(key='admin')
+    if not role_admin:
+        role_admin = yield Role(key='admin', name="管理员").save()
 
-    User.create_table(True)
-    User.get_or_create(
-        name="cula",
-        defaults={
-            'password': User.encode_raw_password('123456'),
-            'group_id': admin_group.id
-        }
-    )
+    role_salesmanager = yield Role.objects.get(key='salesmanager')
+    if not role_salesmanager:
+        Role(key='salesmanager', name="销售人员").save()
 
-    database.close()
+    role_warehousekeeper = yield Role.objects.get(key='warehousekeeper')
+    if not role_warehousekeeper:
+        Role(key='warehousekeeper', name="仓库管理员").save()
+
+    user_admin = yield User.objects.get(
+        name='admin', role_id=str(role_admin._id))
+    if not user_admin:
+        User(
+            name="admin",
+            password=User.encode_raw_password('jingan'),
+            role_id=str(role_admin._id),
+            status='ACTIVE'
+        ).save()
