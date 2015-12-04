@@ -1,7 +1,7 @@
-# coding=utf-8
+# -*- coding: utf-8 -*-
 
 import settings
-import json
+from bson import BSON
 import logging
 from tornado.web import RequestHandler
 from tornado.web import URLSpec
@@ -23,8 +23,7 @@ class BaseHandler(RequestHandler):
         auth_cookie = self.get_secure_cookie(settings.auth_cookie_name, None)
         if auth_cookie:
             try:
-                self.current_user = json.loads(
-                    str(auth_cookie, encoding='utf-8'))
+                self.current_user = BSON.decode(auth_cookie)
                 return self.current_user
             except:
                 pass

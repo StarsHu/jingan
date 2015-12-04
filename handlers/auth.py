@@ -1,12 +1,12 @@
-# coding=utf-8
+# -*- coding: utf-8 -*-
 
-import json
+from bson import BSON
 import datetime
 from tornado.gen import coroutine
 from tornado.web import authenticated
 
 import settings
-from models import User
+from models import User, Role
 from libs.base_handler import BaseHandler
 
 
@@ -32,14 +32,20 @@ class LoginHandler(BaseHandler):
             expire_days = None
             if self.get_argument('remember_me', None):
                 expire_days = 7
-            user.update_at = datetime.datetime.now()
+            user.last_login = datetime.datetime.now()
             yield user.save()
             self.set_secure_cookie(
                 settings.auth_cookie_name,
-                json.dumps({
+                BSON.encode({
+                    '_id': user._id,
                     'name': user.name,
-                    'last_login': user.last_login
-                }, default=datetime.datetime.isoformat),
+                    'last_login': user.last_login,
+                    'role': {
+                        '_id': user.role._id,
+                        'key': user.role.key,
+                        'name': user.role.name,
+                    },
+                }),
                 expire_days
             )
             self.logger.info('%s %s login.' % (user._id, user.name))
@@ -79,7 +85,7 @@ class ChangePasswordHandler(BaseHandler):
             new_password_again = self.get_argument('new_password_again')
             if (new_password != new_password_again):
                 return self.render('auth/change_password.html',
-                                errors=["两次密码输入不一致."])
+                                   errors=["两次密码输入不一致."])
             user.set_password(new_password_again)
             yield user.save()
             return self.redirect('/auth/logout')

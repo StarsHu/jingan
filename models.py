@@ -1,10 +1,23 @@
-# coding=utf-8
+# -*- coding: utf-8 -*-
 
 import hashlib
 from motorengine import fields
 
 import settings
 from libs.base_doc import BaseDoc
+from libs.object_id_field import ObjectIdField
+
+
+class Role(BaseDoc):
+
+    __collection__ = 'role'
+
+    STATUS_LIST = ['ERROR', 'ACTIVE', 'DELETED']
+    key = fields.StringField(db_field='key', max_length=50, unique=True,
+                             required=True)
+    name = fields.StringField(db_field='name', max_length=50, required=True)
+    status = fields.StringField(db_field='status', max_length=20, required=True,
+                                default="ACTIVE")
 
 
 class User(BaseDoc):
@@ -18,10 +31,10 @@ class User(BaseDoc):
     password = fields.StringField(db_field='password', max_length=50,
                                   required=True)
     last_login = fields.DateTimeField(db_field='last_login', required=False)
-    role_id = fields.StringField(db_field='role_id', max_length=50,
-                                 required=True)
     status = fields.StringField(db_field='status', max_length=20, required=True,
                                 default="ACTIVE")
+    role_id = ObjectIdField(db_field='role_id', required=True)
+    role = fields.EmbeddedDocumentField(embedded_document_type=Role)
 
     @classmethod
     def encode_raw_password(cls, password):
@@ -40,15 +53,3 @@ class User(BaseDoc):
 
     def set_password(self, password):
         self.password = self.encode_raw_password(password)
-
-
-class Role(BaseDoc):
-
-    __collection__ = 'role'
-
-    STATUS_LIST = ['ERROR', 'ACTIVE', 'DELETED']
-    key = fields.StringField(db_field='key', max_length=50, unique=True,
-                             required=True)
-    name = fields.StringField(db_field='name', max_length=50, required=True)
-    status = fields.StringField(db_field='status', max_length=20, required=True,
-                                default="ACTIVE")

@@ -8,7 +8,7 @@ $('.navbar #user').addClass('active');
 {% block sidebar %}
 {% set sidebar_items = [
   {"id": "user_list", "name": "用户列表", "href": "/user/list"},
-  {"id": "user_add", "name": "增加用户", "href": "/user/add"}
+  {"id": "user_add", "name": "增加用户", "href": "#"}
   ]  %}
 {% for sidebar_item in sidebar_items %}
 <a href="{{ sidebar_item['href'] }}" class="list-group-item" id="{{ sidebar_item['id'] }}">{{ sidebar_item['name'] }}</a>

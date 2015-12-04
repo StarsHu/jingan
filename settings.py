@@ -10,11 +10,11 @@ port = 8000
 tz = pytz.UTC
 
 # Please define your mongodb config in my_conf.py
-# database = {
-#     'name': 'jingan_db',
-#     'host': '127.0.0.1',
-#     'post': 27017
-# }
+database = {
+    # 'name': 'your_db_name',
+    'host': '127.0.0.1',
+    'port': 27017
+}
 
 handler_packages = [
     'handlers',
@@ -34,6 +34,7 @@ static_url = '/static/'
 cookie_secret = "56f11205eceb0d197e457eb75f9a42b5"
 
 try:
-    from my_conf import *
+    import my_conf
+    database.update(my_conf.database)
 except:
     pass

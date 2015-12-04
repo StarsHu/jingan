@@ -2,3 +2,4 @@ tornado==4.3
 motorengine==0.9.0
 jinja2==2.8
 pytz==2015.7
+bson==0.4.1

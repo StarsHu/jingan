@@ -21,11 +21,12 @@ def init_db():
         Role(key='warehousekeeper', name="仓库管理员").save()
 
     user_admin = yield User.objects.get(
-        name='admin', role_id=str(role_admin._id))
+        name='admin', role_id=role_admin._id)
     if not user_admin:
         User(
             name="admin",
             password=User.encode_raw_password('jingan'),
-            role_id=str(role_admin._id),
+            role_id=role_admin._id,
+            role=role_admin,
             status='ACTIVE'
         ).save()

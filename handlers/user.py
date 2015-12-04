@@ -11,6 +11,7 @@ class UserListHandler(BaseHandler):
 
     route_map = r'/user/list'
 
+
     @authenticated
     @coroutine
     def get(self):

@@ -5,6 +5,18 @@ $('.sidebar #user_list').addClass('active');
 {% endblock %}
 
 {% block main %}
-  <h1>施工 ing...</h1>
-  {{ users }}
+<table class="table table-hover table-striped">
+{% if users %}
+<tr>
+    <td>用户名</td>
+    <td>角色</td>
+</tr>
+{% for user in users %}
+<tr>
+    <td>{{ user.name }}</td>
+    <td>{{ user.role.name }}</td>
+</tr>
+{% endfor %}
+{% endif %}
+</table>
 {% endblock %}
