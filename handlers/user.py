@@ -11,9 +11,8 @@ class UserListHandler(BaseHandler):
 
     route_map = r'/user/list'
 
-
     @authenticated
     @coroutine
     def get(self):
         users = yield User.objects.filter(status='ACTIVE').find_all()
-        self.render('user_list.html', users = users)
+        self.render('user_list.html', users=users)

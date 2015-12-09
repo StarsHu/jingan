@@ -1,4 +1,3 @@
-
 var checkPasswordSame = function() {
   var newPassword = $('input#newPassword').val();
   var newPasswordAgain = $('input#newPasswordAgain').val();

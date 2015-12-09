@@ -2,13 +2,13 @@
 
 
 {% block css %}
-<link rel="stylesheet" href="{{ static_url('css/base.css') }}" type="text/css">
+<link rel="stylesheet" href="{{ static_url('css/layout.css') }}" type="text/css">
 {% block css_file %}{% endblock %}
 {% endblock %}
 
 
 {% block js %}
-<script type="text/javascript" src="{{ static_url('js/base.js') }}"></script>
+<script type="text/javascript" src="{{ static_url('js/layout.js') }}"></script>
 {% block js_file %}{% endblock %}
 <script type="text/javascript">
 $(function(){
@@ -20,7 +20,7 @@ $(function(){
 
 {% block body %}
 
-<nav class="navbar navbar-fixed-top navbar-inverse">
+<nav class="navbar navbar-fixed-top navbar-default">
   <div class="container">
     <div class="navbar-header">
       <a class="navbar-brand" href="/">净安</a>

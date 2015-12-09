@@ -12,4 +12,4 @@ class ObjectIdField(BaseField):
     '''
 
     def validate(self, value):
-        return isinstance(value, ObjectId)
+        return value is None or isinstance(value, ObjectId)

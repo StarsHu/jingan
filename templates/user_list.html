@@ -9,11 +9,13 @@ $('.sidebar #user_list').addClass('active');
 {% if users %}
 <tr>
     <td>用户名</td>
+    <td>上次登录时间</td>
     <td>角色</td>
 </tr>
 {% for user in users %}
 <tr>
     <td>{{ user.name }}</td>
+    <td>{{ user.last_login.strftime("%Y-%m-%d %H:%M:%S") }}</td>
     <td>{{ user.role.name }}</td>
 </tr>
 {% endfor %}

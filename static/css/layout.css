@@ -1,0 +1,22 @@
+body {
+  padding-top: 70px;
+}
+
+footer {
+  border-top: 1px solid #e5e5e5;
+  color: #767676;
+  margin-top: 100px;
+  padding-bottom: 40px;
+  padding-top: 40px;
+  text-align: center;
+}
+
+.sidebar {
+  overflow: hidden;
+  transition: all 0.25s ease-out 0s;
+}
+
+#main-container {
+  min-height: 760px;
+  text-align:center;
+}

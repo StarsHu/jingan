@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from bson import BSON
 import datetime
 from tornado.gen import coroutine
 from tornado.web import authenticated
@@ -8,6 +7,7 @@ from tornado.web import authenticated
 import settings
 from models import User, Role
 from libs.base_handler import BaseHandler
+from libs.form_error import FormError
 
 
 class LoginHandler(BaseHandler):
@@ -26,8 +26,9 @@ class LoginHandler(BaseHandler):
         password = self.get_argument('password')
         user = yield User.objects.get(name=username)
         if not user or user.status != 'ACTIVE':
-            return self.render('auth/login.html', errors=["用户不存在."],
-                               username=username)
+            return self.write_son({
+                'errors': [FormError("用户不存在.")],
+            })
         if user.check_raw_password(password):
             expire_days = None
             if self.get_argument('remember_me', None):
@@ -36,7 +37,7 @@ class LoginHandler(BaseHandler):
             yield user.save()
             self.set_secure_cookie(
                 settings.auth_cookie_name,
-                BSON.encode({
+                self.to_son({
                     '_id': user._id,
                     'name': user.name,
                     'last_login': user.last_login,
@@ -49,10 +50,11 @@ class LoginHandler(BaseHandler):
                 expire_days
             )
             self.logger.info('%s %s login.' % (user._id, user.name))
-            return self.redirect(self.get_argument('next', '/'))
+            return self.write_son({'redirect': self.get_argument('next', '/')})
         else:
-            return self.render('auth/login.html', errors=["密码错误."],
-                               username=username)
+            return self.write_son({
+                'errors': [FormError(u"密码错误.")],
+            })
 
 
 class LogoutHandler(BaseHandler):
@@ -77,18 +79,23 @@ class ChangePasswordHandler(BaseHandler):
     @coroutine
     def post(self):
         user = yield User.objects.get(name=self.current_user['name'])
-        if not user:
-            return self.render('auth/login.html',
-                               errors=["这是一个不该遇到的错误,请告知管理员."])
+        if not user or user.status != 'ACTIVE':
+            return self.write_son({
+                'errors': [FormError("用户不存在.")],
+            })
         if user.check_raw_password(self.get_argument('old_password')):
             new_password = self.get_argument('new_password')
             new_password_again = self.get_argument('new_password_again')
             if (new_password != new_password_again):
-                return self.render('auth/change_password.html',
-                                   errors=["两次密码输入不一致."])
+                return self.write_son({
+                    'errors': [FormError(u"两次密码输入不一致.")]
+                })
             user.set_password(new_password_again)
             yield user.save()
-            return self.redirect('/auth/logout')
+            return self.write_son({
+                'redirect': '/auth/logout'
+            })
         else:
-            return self.render('auth/change_password.html',
-                               errors=["旧密码错误."])
+            return self.write_son({
+                'errors': [FormError(u"旧密码错误.")]
+            })

@@ -28,7 +28,6 @@ body {
   height: auto;
   padding: 10px;
   position: relative;
-
 }
 .form-auth .form-control:focus {
   z-index: 2;
