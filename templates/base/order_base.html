@@ -1,0 +1,16 @@
+{% extends "base/layout.html" %}
+
+{% block js_ready %}
+$('.navbar #order').addClass('active');
+{% block order_js_ready %}{% endblock %}
+{% endblock %}
+
+{% block sidebar %}
+{% set sidebar_items = [
+  {"id": "order_list", "name": "订单列表", "href": "/order/list"},
+  {"id": "order_add", "name": "增加订单", "href": "/order/add"}
+  ]  %}
+{% for sidebar_item in sidebar_items %}
+<a href="{{ sidebar_item['href'] }}" class="list-group-item" id="{{ sidebar_item['id'] }}">{{ sidebar_item['name'] }}</a>
+{% endfor %}
+{% endblock %}

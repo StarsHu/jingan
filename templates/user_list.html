@@ -15,7 +15,11 @@ $('.sidebar #user_list').addClass('active');
 {% for user in users %}
 <tr>
     <td>{{ user.name }}</td>
+    {% if user.last_login %}
     <td>{{ user.last_login.strftime("%Y-%m-%d %H:%M:%S") }}</td>
+    {% else %}
+    <td></td>
+    {% endif %}
     <td>{{ user.role.name }}</td>
 </tr>
 {% endfor %}

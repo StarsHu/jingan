@@ -1,0 +1,52 @@
+{% extends "base/order_base.html" %}
+
+{% block order_js_ready %}
+$('.sidebar #order_add').addClass('active');
+{% endblock %}
+
+{% block main %}
+      <form class="form form-horizontal form-order-add">
+            {{ xsrf_form_html() }}
+            <div class="form-group">
+              <label for="source" class="col-sm-3 control-label">类型</label>
+              <div class="col-sm-2">
+                <select class="form-control selectpicker show-tick" name="source">
+                  {% for source, source_display in handler.SOURCE_LIST_DISPLAY.items() %}
+                  <option value={{ source }}>{{ source_display }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="seller" class="col-sm-3 control-label">销售员</label>
+              <div class="col-sm-3">
+                <input type="text" class="form-control" name="seller" placeholder="销售员" required> 
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="seller" class="col-sm-3 control-label">发货日期</label>
+              <div class="col-sm-3">
+                <input class="form-control datepicker" name="deliever_at" data-provide="datepicker" required> 
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="yard" class="col-sm-3 control-label">堆场</label>
+              <div class="col-sm-7">
+                <select class="form-control selectpicker show-tick" name="yard" required> 
+                  {% for yard in yards %}
+                  <option value={{ str(yard._id) }}>{{ yard.address }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <span class="form-error-block help-block"></span>
+            </div>
+            <div class="form-group">
+              <label for="source" class="col-sm-3 control-label"></label>
+              <div class="col-sm-3">
+              <button class="form-submit btn btn-lg btn-primary btn-block" type="submit">提交</button>
+            </div>
+            </div>
+        </form>
+{% endblock %}

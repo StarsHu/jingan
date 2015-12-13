@@ -10,7 +10,9 @@
     <title>净安</title>
     <link rel="icon" href="">
 
-    <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css" type="text/css">
+    <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.css" type="text/css">
+    <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap-select/1.8.1/css/bootstrap-select.css" type="text/css">
+    <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap-datepicker/1.5.0/css/bootstrap-datepicker.css" type="text/css">
     <link rel="stylesheet" href="{{ static_url('css/base.css') }}" type="text/css">
 
     {% block css %}{% endblock %}
@@ -27,8 +29,11 @@
 
     {% block body %}{% endblock %}
 
-    <script type="text/javascript" src="http://cdn.bootcss.com/jquery/2.1.4/jquery.min.js"></script>
-    <script type="text/javascript" src="http://cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="http://cdn.bootcss.com/jquery/2.1.4/jquery.js" charset="UTF-8"></script>
+    <script type="text/javascript" src="http://cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.js" charset="UTF-8"></script>
+    <script type="text/javascript" src="http://cdn.bootcss.com/bootstrap-select/1.8.1/js/bootstrap-select.js" charset="UTF-8"></script>
+    <script type="text/javascript" src="http://cdn.bootcss.com/bootstrap-datepicker/1.5.0/js/bootstrap-datepicker.js" charset="UTF-8"></script>
+    <script type="text/javascript" src="http://cdn.bootcss.com/bootstrap-datepicker/1.5.0/locales/bootstrap-datepicker.zh-CN.min.js" charset="UTF-8"></script>
     <script type="text/javascript" src="{{ static_url('js/base.js') }}"></script>
 
     {% block js %}{% endblock %}

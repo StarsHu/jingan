@@ -18,6 +18,15 @@ class BaseHandler(RequestHandler):
 
     errors = list()
 
+    SOURCE_LIST_DISPLAY = {
+        'JINGDO': '京东',
+        'TMALL': '天猫',
+        'SUNING': '苏宁',
+        'YIHAODIAN': '一号店',
+        'FEINIU': '飞牛',
+    }
+
+
     @classmethod
     def get_url_spec(cls):
         return URLSpec(cls.route_map, cls, cls.route_kwargs, cls.route_name)

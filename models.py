@@ -6,6 +6,7 @@ from motorengine import fields
 import settings
 from libs.base_doc import BaseDoc
 from libs.object_id_field import ObjectIdField
+from libs.date_field import DateField
 
 
 class Role(BaseDoc):
@@ -16,13 +17,12 @@ class Role(BaseDoc):
     key = fields.StringField(db_field='key', max_length=50, unique=True,
                              required=True)
     name = fields.StringField(db_field='name', max_length=50, required=True)
-    status = fields.StringField(db_field='status', max_length=20, required=True,
-                                default="ACTIVE")
 
 
 class User(BaseDoc):
 
     __collection__ = 'user'
+    __lazy__ = False
 
     STATUS_LIST = ['ERROR', 'ACTIVE', 'DELETED']
 
@@ -31,10 +31,7 @@ class User(BaseDoc):
     password = fields.StringField(db_field='password', max_length=50,
                                   required=True)
     last_login = fields.DateTimeField(db_field='last_login', required=False)
-    status = fields.StringField(db_field='status', max_length=20, required=True,
-                                default="ACTIVE")
-    role_id = ObjectIdField(db_field='role_id', required=True)
-    role = fields.EmbeddedDocumentField(embedded_document_type=Role)
+    role = fields.ReferenceField(reference_document_type=Role)
 
     @classmethod
     def encode_raw_password(cls, password):
@@ -53,3 +50,47 @@ class User(BaseDoc):
 
     def set_password(self, password):
         self.password = self.encode_raw_password(password)
+
+    def get_role(self):
+        return Role.objects.get(self.role_id)
+
+
+class Item(BaseDoc):
+
+    __collection__ = 'item'
+
+    uuid = fields.StringField(db_field='uuid', max_length=50, unique=True,
+                              required=True)
+    name = fields.StringField(db_field='name', max_length=200, required=True)
+    size = fields.StringField(db_field='size', max_length=50)
+    price_for_ref = fields.DecimalField(db_field='price', required=True,
+                                        default=0.0)
+
+
+class Yard(BaseDoc):
+
+    __collection__ = 'yard'
+
+    source = fields.StringField(db_field='source', max_length=20, required=True)
+    name = fields.StringField(db_field='name', max_length=200, required=True)
+    phone = fields.StringField(db_field='phone', max_length=20, required=True)
+    phone_bk = fields.StringField(db_field='phone_bk', max_length=20,
+                                  required=True)
+    address = fields.StringField(db_field='address', max_length=20,
+                                 required=True, default='')
+    position = fields.StringField(db_field='position', max_length=50,
+                                   required=True, default='')
+
+
+class Order(BaseDoc):
+
+    __collection__ = 'order'
+
+    uuid = fields.StringField(db_field='uuid', max_length=50, unique=True,
+                              required=True)
+    source = fields.StringField(db_field='source', max_length=20, required=True)
+    seller = fields.StringField(db_field='seller', max_length=20, required=True)
+    yard = fields.EmbeddedDocumentField(embedded_document_type=Yard)
+    deliver_at = DateField(db_field='deliver_at', required=False)
+    content = fields.JsonField(db_field='content', required=True,
+                               default=dict())

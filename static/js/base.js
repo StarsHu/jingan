@@ -1,7 +1,6 @@
 $(function () {
   $('.form').each(function() {
     var form = $(this);
-    // alert(Object.keys(form));
     var uri = form.attr('action');
     form.attr('method', 'POST');
     var formGroups = form.find('.form-group');
@@ -26,5 +25,12 @@ $(function () {
     }
 
     form.submit(submitForm);
+  });
+
+  $('.datepicker').datepicker({
+    language: 'zh-CN',
+    todayBtn: 'linked',
+    todayHighlight: 'true',
+    autoclose: true
   });
 });

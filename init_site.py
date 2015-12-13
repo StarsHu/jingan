@@ -20,13 +20,12 @@ def init_db():
     if not role_warehousekeeper:
         Role(key='warehousekeeper', name="仓库管理员").save()
 
-    user_admin = yield User.objects.get(
-        name='admin', role_id=role_admin._id)
-    if not user_admin:
-        User(
-            name="admin",
-            password=User.encode_raw_password('jingan'),
-            role_id=role_admin._id,
-            role=role_admin,
-            status='ACTIVE'
-        ).save()
+    user_admin = yield User.objects.get(name='admin')
+    if user_admin:
+        yield user_admin.delete()
+    User(
+        name="admin",
+        password=User.encode_raw_password('jingan'),
+        role=role_admin,
+        status='ACTIVE'
+    ).save()
