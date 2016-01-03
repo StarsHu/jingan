@@ -1,0 +1,117 @@
+{% extends "base/yard_base.html" %}
+
+{% block yard_js_ready %}
+$('.sidebar #yard_list').addClass('active');
+{% endblock %}
+
+{% block main %}
+<div class="fixed-table-toolbar">
+  <div class="pull-right search">
+    <input type="text" placeholder="搜索" class="form-control">
+  </div>
+</div>
+<table class="table table-hover table-striped" data-toggle="table">
+  {% if yards %}
+  <thead>
+    <tr>
+      <th>平台</th>
+      <th>仓位</th>
+      <th>姓名</th>
+      <th>电话</th>
+      <th>地址</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for yard in yards %}
+    <tr data-index={{yard._id}}>
+      <td>
+        <a tabindex="0" role="button" data-toggle="popover" data-placement="top" data-html="true" data-content='
+          <form class="form form-inline" method="POST" action="/yard/edit/{{yard._id}}">
+            {{ xsrf_form_html() }}
+            <div class="form-group">
+                <select class="form-control selectpicker show-tick" name="source" required style="padding-right: 24px;">
+                  {% for source, source_display in handler.SOURCE_LIST_DISPLAY.items() %}
+                  <option value={{ source }}>{{ source_display }}</option>
+                  {% endfor %}
+                </select>
+            </div>
+          <div class="form-group">
+            <button class="btn btn-primary btn-sm" type="button" onclick="formAjaxSubmit($(this))"><i class="glyphicon glyphicon-ok"></i></button>
+          </div>
+          </form>
+        '>{{ handler.SOURCE_LIST_DISPLAY.get(yard.source) }}</a>
+      </td>
+      <td>
+        <a tabindex="0" role="button" data-toggle="popover" data-placement="top" data-html="true" data-content='
+          <form class="form form-inline" method="POST" action="/yard/edit/{{yard._id}}">
+            {{ xsrf_form_html() }}
+            <div class="form-group">
+              <input type="text" class="form-control input-sm" style="padding-right: 24px;" name="region" required>
+            </div>
+          <div class="form-group">
+            <button class="btn btn-primary btn-sm" type="button" onclick="formAjaxSubmit($(this))"><i class="glyphicon glyphicon-ok"></i></button>
+          </div>
+          </form>
+        '>{{ yard.region }}</a>
+      </td>
+      <td style="max-width:80px">
+        <a tabindex="0" role="button" data-toggle="popover" data-placement="top" data-html="true" data-content='
+          <form class="form form-inline" method="POST" action="/yard/edit/{{yard._id}}">
+            {{ xsrf_form_html() }}
+            <div class="form-group">
+              <input type="text" class="form-control input-sm" style="padding-right: 24px;" name="name" required>
+            </div>
+          <div class="form-group">
+            <button class="btn btn-primary btn-sm" type="button" onclick="formAjaxSubmit($(this))"><i class="glyphicon glyphicon-ok"></i></button>
+          </div>
+          </form>
+        '>{{ yard.name }}</a>
+      </td>
+      <td style="max-width:150px">
+        <a tabindex="0" data-toggle="popover" data-placement="top" data-html="true" data-content='
+          <form class="form form-inline" method="POST" action="/yard/edit/{{yard._id}}">
+            {{ xsrf_form_html() }}
+            <div class="form-group">
+              <input type="text" class="form-control input-sm" style="padding-right: 24px;" name="phone" required>
+            </div>
+          <div class="form-group">
+            <button class="btn btn-primary btn-sm" type="button" onclick="formAjaxSubmit($(this))"><i class="glyphicon glyphicon-ok"></i></button>
+          </div>
+          </form>
+        '>{{ yard.phone }}</a>
+      </td>
+      <td style="max-width:300px">
+        <a tabindex="0" role="button" data-toggle="popover" data-placement="top" data-html="true" data-content='
+          <form class="form form-inline" method="POST" action="/yard/edit/{{yard._id}}">
+            {{ xsrf_form_html() }}
+            <div class="form-group">
+              <input type="text" class="form-control input-sm" style="padding-right: 24px;" name="address" required>
+            </div>
+          <div class="form-group">
+            <button class="btn btn-primary btn-sm" type="button" onclick="formAjaxSubmit($(this))"><i class="glyphicon glyphicon-ok"></i></button>
+          </div>
+          </form>
+          '>{{ yard.address }}</a>
+      </td>
+      <td>
+        <a tabindex="0" role="button" data-toggle="popover" data-placement="top" data-html="true" data-content='
+          <form class="form form-inline" method="POST" action="/yard/delete/{{yard._id}}">
+          {{ xsrf_form_html() }}
+          <div class="form-group">
+            <button class="btn btn-primary btn-sm" type="button" onclick="formAjaxSubmit($(this))">确认删除</button>
+          </div>
+          </form>
+        '><i class="glyphicon glyphicon-remove"></i></a>
+ 
+      </td>
+    </tr>
+  {% endfor %}
+  </thead>
+  {% else %}
+  <h5>
+    没有任何数据哦亲。请<a href="/yard/add">添加</a>
+  </h5>
+  {% endif %}
+</table>
+{% endblock %}

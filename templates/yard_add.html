@@ -1,0 +1,57 @@
+{% extends "base/yard_base.html" %}
+
+{% block yard_js_ready %}
+$('.sidebar #yard_add').addClass('active');
+{% endblock %}
+
+{% block main %}
+<form class="form form-horizontal form-yard-add" method="POST" action="/yard/add">
+            {{ xsrf_form_html() }}
+            <div class="form-group">
+              <label for="source" class="col-sm-3 control-label">平台</label>
+              <div class="col-sm-2">
+                <select class="form-control selectpicker show-tick" name="source">
+                  {% for source, source_display in handler.SOURCE_LIST_DISPLAY.items() %}
+                  <option value={{ source }}>{{ source_display }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="seller" class="col-sm-3 control-label">仓位</label>
+              <div class="col-sm-3">
+                <input type="text" class="form-control" name="region" placeholder="如: 华南(广州)" required> 
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="seller" class="col-sm-3 control-label">姓名</label>
+              <div class="col-sm-3">
+                <input type="text" class="form-control" name="name" placeholder="如: 张三" required> 
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="seller" class="col-sm-3 control-label">电话</label>
+              <div class="col-sm-5">
+                <input type="text" class="form-control" name="phone" placeholder="如: 13712312312, 021-12343214" required> 
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="seller" class="col-sm-3 control-label">地址</label>
+              <div class="col-sm-9">
+                <input type="text" class="form-control" name="address" placeholder="如: 天津市武清区京滨大道88号" required> 
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-sm-3"></div>
+              <div class="col-sm-9 form-error">
+                <span class="form-error-block help-block"></span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="source" class="col-sm-3 control-label"></label>
+              <div class="col-sm-3">
+              <button class="form-submit btn btn-lg btn-primary btn-block" type="submit">提交</button>
+            </div>
+            </div>
+        </form>
+{% endblock %}

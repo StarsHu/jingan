@@ -72,14 +72,12 @@ class Yard(BaseDoc):
     __collection__ = 'yard'
 
     source = fields.StringField(db_field='source', max_length=20, required=True)
+    region = fields.StringField(db_field='region', max_length=20,
+                                required=True, default='')
     name = fields.StringField(db_field='name', max_length=200, required=True)
-    phone = fields.StringField(db_field='phone', max_length=20, required=True)
-    phone_bk = fields.StringField(db_field='phone_bk', max_length=20,
-                                  required=True)
-    address = fields.StringField(db_field='address', max_length=20,
+    phone = fields.StringField(db_field='phones', max_length=100, required=True)
+    address = fields.StringField(db_field='address', max_length=200,
                                  required=True, default='')
-    position = fields.StringField(db_field='position', max_length=50,
-                                   required=True, default='')
 
 
 class Order(BaseDoc):

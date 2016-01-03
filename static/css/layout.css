@@ -18,5 +18,14 @@ footer {
 
 #main-container {
   min-height: 760px;
-  text-align:center;
+  text-align: center;
+}
+
+table td {
+  text-align: left;
+ 
+}
+
+.form .form-error {
+  text-align: left;
 }

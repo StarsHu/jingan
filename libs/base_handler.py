@@ -8,6 +8,7 @@ from tornado.web import URLSpec
 
 from libs.json_encoder import ComplexEncoder
 
+
 class BaseHandler(RequestHandler):
 
     route_map = None
@@ -25,7 +26,6 @@ class BaseHandler(RequestHandler):
         'YIHAODIAN': '一号店',
         'FEINIU': '飞牛',
     }
-
 
     @classmethod
     def get_url_spec(cls):
