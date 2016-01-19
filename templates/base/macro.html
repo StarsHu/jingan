@@ -1,0 +1,38 @@
+{% macro editable_form_edit(name, url, xsrf) %}
+<form class="form form-inline form-editable" method="POST" action="{{ url }}">
+  {{ xsrf }}
+  <div class="form-group">
+    <input type="text" class="form-control input-sm" style="padding-right: 24px;" name="{{ name }}" required>
+  </div>
+  <div class="form-group">
+    <button class="btn btn-primary btn-sm" type="button" onclick="formAjaxSubmit($(this))"><i class="glyphicon glyphicon-ok"></i></button>
+  </div>
+</form>
+{%- endmacro %}"
+
+
+{% macro editable_form_select(name, url, items, xsrf) %}
+<form class="form form-inline form-editable" method="POST" action="{{ url }}">
+  {{ xsrf }}
+  <div class="form-group">
+    <select class="form-control selectpicker show-tick" name="{{ name }}" required style="padding-right: 24px;">
+      {% for item, item_display in items %}
+      <option value={{ item }}>{{ item_display }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="form-group">
+    <button class="btn btn-primary btn-sm" type="button" onclick="formAjaxSubmit($(this))"><i class="glyphicon glyphicon-ok"></i></button>
+  </div>
+
+</form>
+{%- endmacro %}"
+
+{% macro editable_form_delete(url, xsrf) %}
+<form class="form form-inline form-editable" method="POST" action="{{ url }}">
+  {{ xsrf }}
+  <div class="form-group">
+    <button class="btn btn-primary btn-sm" type="button" onclick="formAjaxSubmit($(this))">确认删除</button>
+  </div>
+</form>
+{%- endmacro %}"

@@ -1,22 +1,8 @@
 {% extends "base/base.html" %}
 
-
-{% block css %}
+{% block css_file %}
 <link rel="stylesheet" href="{{ static_url('css/layout.css') }}" type="text/css">
-{% block css_file %}{% endblock %}
 {% endblock %}
-
-
-{% block js %}
-<script type="text/javascript" src="{{ static_url('js/layout.js') }}"></script>
-{% block js_file %}{% endblock %}
-<script type="text/javascript">
-$(function(){
-  {% block js_ready %}{% endblock %}
-});
-</script>
-{% endblock %}
-
 
 {% block body %}
 
