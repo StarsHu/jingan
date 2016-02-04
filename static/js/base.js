@@ -38,7 +38,7 @@ function formInit(form) {
       });
       return false;
     }
-
+    
     form.submit(submitForm);
     return false;
 }
@@ -57,6 +57,20 @@ function checkPasswordSame() {
   }
 }
 
+
+function doSearch(query) {
+  var uri = URI(window.location.href);
+  uri.search("").search({q: query});
+  window.location.href = uri;
+}
+
+function genPage(page) {
+  var uri = URI(window.location.href);
+  uri.removeSearch("page").addSearch({page: page});
+  window.location.href = uri;
+}
+
+
 $(function () {
   $('.form').each(function() {
     formInit($(this));
@@ -74,5 +88,4 @@ $(function () {
   $('[data-toggle="offcanvas"]').click(function () {
     $('.row-offcanvas').toggleClass('active')
   });
-
 });

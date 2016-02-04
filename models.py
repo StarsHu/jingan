@@ -75,7 +75,7 @@ class Yard(BaseDoc):
     region = fields.StringField(db_field='region', max_length=20,
                                 required=True, default='')
     name = fields.StringField(db_field='name', max_length=200, required=True)
-    phone = fields.StringField(db_field='phones', max_length=100, required=True)
+    phone = fields.StringField(db_field='phone', max_length=100, required=True)
     address = fields.StringField(db_field='address', max_length=200,
                                  required=True, default='')
 

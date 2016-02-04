@@ -1,5 +1,5 @@
 {% macro editable_form_edit(name, url, xsrf) %}
-<form class="form form-inline form-editable" method="POST" action="{{ url }}">
+<form class="form form-inline form-editable" method="POST" action="{{ url }}" onSubmit="return false;">
   {{ xsrf }}
   <div class="form-group">
     <input type="text" class="form-control input-sm" style="padding-right: 24px;" name="{{ name }}" required>

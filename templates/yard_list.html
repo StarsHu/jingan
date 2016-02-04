@@ -1,69 +1,138 @@
-{% extends "base/yard_base.html" %}
+{% extends "base/layout.html" %}
 
 {% import 'base/macro.html' as macros %}
 
-{% block yard_js_ready %}
-$('.sidebar #yard_list').addClass('active');
-{% endblock %}
-
 {% block main %}
-<div class="fixed-table-toolbar">
-  <div class="pull-right search">
-    <input type="text" placeholder="搜索" class="form-control">
+  <div class="modal fade" id="createYard" tabindex="-1" role="dialog" aria-labelledby="createYard">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="myModalLabel">请输入相关信息</h4>
+        </div>
+        <form class="form form-horizontal" id="createYardForm" method="POST" action="/yard/add">
+          <div class="modal-body">
+            {{ xsrf_form_html() }}
+            <div class="form-group">
+              <label for="source" class="col-sm-2 control-label">平台</label>
+              <div class="col-sm-3">
+                <select class="form-control selectpicker show-tick" name="source">
+                  {% for source, source_display in handler.SOURCE_LIST_DISPLAY.items() %}
+                    <option value={{ source }}>{{ source_display }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="seller" class="col-sm-2 control-label">仓位</label>
+              <div class="col-sm-3">
+                <input type="text" class="form-control" name="region" placeholder="如: 华南(广州)" required> 
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="seller" class="col-sm-2 control-label">姓名</label>
+              <div class="col-sm-3">
+                <input type="text" class="form-control" name="name" placeholder="如: 张三" required> 
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="seller" class="col-sm-2 control-label">电话</label>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" name="phone" placeholder="如: 13712312312, 021-12343214" required> 
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="seller" class="col-sm-2 control-label">地址</label>
+              <div class="col-sm-9">
+                <input type="text" class="form-control" name="address" placeholder="如: 天津市武清区京滨大道88号" required> 
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-sm-2"></div>
+              <div class="col-sm-9 form-error">
+                <span class="form-error-block help-block"></span>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+              <button class="form-submit btn btn-primary" type="submit">保存</button>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
-</div>
-<table class="table table-hover table-striped" data-toggle="table">
+
+
+  <div class="fixed-table-toolbar">
+    <div class="pull-left">
+      <button type="button" class="btn btn-primary"  data-toggle="modal" data-target="#createYard">添加</button>
+    </div>
+    <div class="pull-right search">
+      <form class="form-inline" action="#" onSubmit="doSearch($('#searchQuery').first().val()); return false;">
+        <div class="input-group">
+          <input type="text" placeholder="搜索" class="form-control" id="searchQuery" value="{{ q }}">
+          <div class="input-group-addon">
+            <a class="btn-link" style="cursor:pointer;" type="submit" >
+              <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+            </a>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
   {% if yards %}
-  <thead>
-    <tr>
-      <th>平台</th>
-      <th>仓位</th>
-      <th>姓名</th>
-      <th>电话</th>
-      <th>地址</th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for yard in yards %}
-    <tr data-index={{yard._id}}>
-      <td>
-        <a tabindex="0" role="button" data-toggle="popover" data-placement="top" data-html="true" data-content='
-        {{ macros.editable_form_select('source', '/yard/edit/' + yard._id|string, handler.SOURCE_LIST_DISPLAY.items(), xsrf_form_html()) }}
-        '>{{ handler.SOURCE_LIST_DISPLAY.get(yard.source) }}</a>
-      </td>
-      <td>
-        <a tabindex="0" role="button" data-toggle="popover" data-placement="top" data-html="true" data-content='
-        {{ macros.editable_form_edit('region', '/yard/edit/' + yard._id|string, xsrf_form_html()) }}
-        '>{{ yard.region }}</a>
-      </td>
-      <td style="max-width:80px">
-        <a tabindex="0" role="button" data-toggle="popover" data-placement="top" data-html="true" data-content='
-        {{ macros.editable_form_edit('name', '/yard/edit/' + yard._id|string, xsrf_form_html()) }}
-        '>{{ yard.name }}</a>
-      </td>
-      <td style="max-width:150px">
-        <a tabindex="0" data-toggle="popover" data-placement="top" data-html="true" data-content='
-        {{ macros.editable_form_edit('phone', '/yard/edit/' + yard._id|string, xsrf_form_html()) }}
-        '>{{ yard.phone }}</a>
-      </td>
-      <td style="max-width:300px">
-        <a tabindex="0" role="button" data-toggle="popover" data-placement="top" data-html="true" data-content='
-        {{ macros.editable_form_edit('address', '/yard/edit/' + yard._id|string, xsrf_form_html()) }}
-        '>{{ yard.address }}</a>
-      </td>
-      <td>
-        <a tabindex="0" role="button" data-toggle="popover" data-placement="top" data-html="true" data-content='
-        {{ macros.editable_form_delete('/yard/delete/' + yard._id|string, xsrf_form_html()) }}
-        '><i class="glyphicon glyphicon-remove"></i></a>
-      </td>
-    </tr>
-    {% endfor %}
-    </thead>
-    {% else %}
-    <h5>
-      没有任何数据哦亲。请<a href="/yard/add">添加</a>
-    </h5>
-    {% endif %}
-</table>
-{% endblock %}
+    <table class="table table-hover table-striped" data-toggle="table">
+      <thead>
+        <tr>
+          <th>平台</th>
+          <th>仓位</th>
+          <th>姓名</th>
+          <th>电话</th>
+          <th>地址</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for yard in yards %}
+          <tr data-index={{yard._id}}>
+            <td>
+              <a tabindex="0" role="button" data-toggle="popover" data-placement="top" data-html="true" data-content='
+                {{ macros.editable_form_select('source', '/yard/edit/' + yard._id|string, handler.SOURCE_LIST_DISPLAY.items(), xsrf_form_html()) }}
+                '>{{ handler.SOURCE_LIST_DISPLAY.get(yard.source) }}</a>
+            </td>
+            <td>
+              <a tabindex="0" role="button" data-toggle="popover" data-placement="top" data-html="true" data-content='
+                {{ macros.editable_form_edit('region', '/yard/edit/' + yard._id|string, xsrf_form_html()) }}
+                '>{{ yard.region }}</a>
+            </td>
+            <td style="max-width:80px">
+              <a tabindex="0" role="button" data-toggle="popover" data-placement="top" data-html="true" data-content='
+                {{ macros.editable_form_edit('name', '/yard/edit/' + yard._id|string, xsrf_form_html()) }}
+                '>{{ yard.name }}</a>
+            </td>
+            <td style="max-width:150px">
+              <a tabindex="0" data-toggle="popover" data-placement="top" data-html="true" data-content='
+                {{ macros.editable_form_edit('phone', '/yard/edit/' + yard._id|string, xsrf_form_html()) }}
+                '>{{ yard.phone }}</a>
+            </td>
+            <td style="max-width:300px">
+              <a tabindex="0" role="button" data-toggle="popover" data-placement="top" data-html="true" data-content='
+                {{ macros.editable_form_edit('address', '/yard/edit/' + yard._id|string, xsrf_form_html()) }}
+                '>{{ yard.address }}</a>
+            </td>
+            <td>
+              <a tabindex="0" role="button" data-toggle="popover" data-placement="top" data-html="true" data-content='
+                {{ macros.editable_form_delete('/yard/delete/' + yard._id|string, xsrf_form_html()) }}
+                '><i class="glyphicon glyphicon-remove"></i></a>
+            </td>
+          </tr>
+        {% endfor %}
+        </thead>
+      {% else %}
+        <h5>
+          <p>没有任何数据哦亲。请<a href="/yard/add">添加</a></p>
+        </h5>
+      {% endif %}
+    </table>
+  {% endblock %}
