@@ -1,20 +1,3 @@
-function formAjaxSubmit(child, target){
-  var form = child.parents('form');
-  var uri = form.attr('action');
-  $.post(uri, form.serialize(), function(data, textStatus, jqXHR) {
-    if (data.errors) {
-      var error = data.errors[0];
-      if(error) {
-        alert(error.message);
-      }
-    } else if (data.redirect) {
-      $(window.location).attr('href', data.redirect);
-    } else {
-      location.reload();
-    }
-  });
-}
-
 function formInit(form) {
     var uri = form.attr('action');
     form.attr('method', 'POST');
@@ -22,41 +5,53 @@ function formInit(form) {
     var submitWidget = form.find('.form-submit');
     var errBlock = form.find('.form-error-block').last();
 
-    function submitForm() {
-      errBlock.parents('.form-group').removeClass('has-error');
-      errBlock.text('');
-      $.post(uri, form.serialize(), function(data, textStatus, jqXHR) {
+    form.validator().submit(function (e) {
+      if (!e.isDefaultPrevented()) {
+        errBlock.parents('.form-group').removeClass('has-error');
+        errBlock.text('');
+        var data = form.serialize();
+        $.post(uri, data, function(data, textStatus, jqXHR) {
+          if (data.errors) {
+            var error = data.errors[0];
+            errBlock.parents('.form-group').addClass('has-error');
+            errBlock.text(error.message);
+          } else if (data.redirect) {
+            window.location.href = data.redirect;
+          } else {
+            location.reload();
+          }
+        });
+      }
+      return false;
+    })
+}
+
+function formAjaxSubmit(child, target){
+  var form = child.parents('form').first();
+  var submitWidget = child;
+  var uri = form.attr('action');
+
+  form.validator().submit(function(e){
+    if (!e.isDefaultPrevented()) {
+      var data = form.serialize();
+      $.post(uri, data, function(data, textStatus, jqXHR) {
         if (data.errors) {
           var error = data.errors[0];
-          errBlock.parents('.form-group').addClass('has-error');
-          errBlock.text(error.message);
+          if(error) {
+            alert(error.message);
+          }
         } else if (data.redirect) {
           $(window.location).attr('href', data.redirect);
         } else {
           location.reload();
         }
       });
-      return false;
     }
-    
-    form.submit(submitForm);
     return false;
-}
+  })
 
-function checkPasswordSame() {
-  var newPassword = $('input#newPassword').val();
-  var newPasswordAgain = $('input#newPasswordAgain').val();
-  if (newPassword == newPasswordAgain) {
-    $('#newPasswordGroup').removeClass('has-error');
-    $('#newPasswordError').text('');
-    $('#newPasswordSubmit').removeAttr('disabled');
-  } else {
-    $('#newPasswordGroup').addClass('has-error');
-    $('#newPasswordError').text('两次输入密码不一致.');
-    $('#newPasswordSubmit').attr('disabled', 'disabled');
-  }
+  form.submit();
 }
-
 
 function doSearch(query) {
   var uri = URI(window.location.href);
@@ -88,4 +83,5 @@ $(function () {
   $('[data-toggle="offcanvas"]').click(function () {
     $('.row-offcanvas').toggleClass('active')
   });
+
 });

@@ -78,7 +78,12 @@ class ChangePasswordHandler(BaseHandler):
     @authenticated
     @coroutine
     def post(self):
+        old_password = self.get_argument('old_password')
         user = yield User.objects.get(name=self.current_user['name'])
+        if not user.check_raw_password:
+            return self.write_son({
+                'errors': [FormError(u"旧密码输入不一致.")]
+            })
         if not user or user.status != 'ACTIVE':
             return self.write_son({
                 'errors': [FormError("用户不存在.")],
