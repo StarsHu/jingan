@@ -3,48 +3,38 @@
 {% import 'base/macro.html' as macros %}
 
 {% block main %}
-  <div class="modal fade" id="createYard" tabindex="-1" role="dialog" aria-labelledby="createYard">
+  <div class="modal fade" id="createProduct" tabindex="-1" role="dialog" aria-labelledby="createProduct">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
           <h4 class="modal-title">请输入相关信息</h4>
         </div>
-        <form class="form form-horizontal" id="createYardForm" method="POST" action="/yard/create">
+        <form class="form form-horizontal" id="createProductForm" method="POST" action="/product/create">
           <div class="modal-body">
             {{ xsrf_form_html() }}
             <div class="form-group">
-              <label for="source" class="col-sm-2 control-label">平台</label>
+              <label for="sku" class="col-sm-2 control-label">SKU</label>
               <div class="col-sm-3">
-                <select class="form-control selectpicker show-tick" name="source">
-                  {% for source, source_display in handler.SOURCE_LIST_DISPLAY.items() %}
-                    <option value={{ source }}>{{ source_display }}</option>
-                  {% endfor %}
-                </select>
+                <input type="text" class="form-control" name="sku" placeholder="如: SKU_XXXXX" required> 
               </div>
             </div>
             <div class="form-group">
-              <label for="seller" class="col-sm-2 control-label">仓位</label>
+              <label for="name" class="col-sm-2 control-label">名称</label>
               <div class="col-sm-3">
-                <input type="text" class="form-control" name="region" placeholder="如: 华南(广州)" required> 
+                <input type="text" class="form-control" name="name" placeholder="如: 地毯干洗剂500ml" required> 
               </div>
             </div>
             <div class="form-group">
-              <label for="name" class="col-sm-2 control-label">姓名</label>
-              <div class="col-sm-3">
-                <input type="text" class="form-control" name="name" placeholder="如: 张三" required> 
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="phone" class="col-sm-2 control-label">电话</label>
+              <label for="seller" class="col-sm-2 control-label">商品编号</label>
               <div class="col-sm-6">
-                <input type="text" class="form-control" name="phone" placeholder="如: 13712312312, 021-12343214" required> 
+                <input type="text" class="form-control" name="id_from_source" placeholder="如: 37502389414" required> 
               </div>
             </div>
             <div class="form-group">
-              <label for="address" class="col-sm-2 control-label">地址</label>
+              <label for="price_for_ref" class="col-sm-2 control-label">参考价格</label>
               <div class="col-sm-9">
-                <input type="text" class="form-control" name="address" placeholder="如: 天津市武清区京滨大道88号" required> 
+                <input type="number" class="form-control" name="price_for_ref" placeholder="如: 10.1 单位默认'人民币:元', 无须填写" required> 
               </div>
             </div>
             <div class="form-group">
@@ -66,7 +56,7 @@
 
   <div class="fixed-table-toolbar">
     <div class="pull-left">
-      <button type="button" class="btn btn-primary"  data-toggle="modal" data-target="#createYard">添加</button>
+      <button type="button" class="btn btn-primary"  data-toggle="modal" data-target="#createProduct">添加</button>
     </div>
     <div class="pull-right search">
       <form class="form-inline" action="#" onSubmit="doSearch($('#searchQuery').first().val()); return false;">
@@ -81,52 +71,46 @@
       </form>
     </div>
   </div>
-  {% if yards %}
+  {% if products %}
   <div>
     {{ macros.pagination(p, total) }}
   </div>
     <table class="table table-hover table-striped" data-toggle="table">
       <thead>
         <tr>
-          <th>平台</th>
-          <th>仓位</th>
-          <th>姓名</th>
-          <th>电话</th>
-          <th>地址</th>
+          <th>SKU</th>
+          <th>名称</th>
+          <th>产品编号</th>
+          <th>参考价格</th>
           <th></th>
         </tr>
       </thead>
       <tbody>
-        {% for yard in yards %}
-          <tr data-index={{yard._id}}>
+        {% for product in products %}
+          <tr data-index={{product._id}}>
             <td>
               <a tabindex="0" role="button" data-toggle="popover" data-placement="top" data-html="true" data-content='
-                {{ macros.editable_form_select('source', '/yard/update/' + yard._id|string, handler.SOURCE_LIST_DISPLAY.items(), xsrf_form_html()) }}
-                '>{{ handler.SOURCE_LIST_DISPLAY.get(yard.source) }}</a>
-            </td>
-            <td>
-              <a tabindex="0" role="button" data-toggle="popover" data-placement="top" data-html="true" data-content='
-                {{ macros.editable_form_edit('region', '/yard/update/' + yard._id|string, xsrf_form_html()) }}
-                '>{{ yard.region }}</a>
+                {{ macros.editable_form_edit('sku', '/product/update/' + product._id|string, xsrf_form_html()) }}
+                '>{{ product.sku }}</a>
             </td>
             <td style="max-width:80px">
               <a tabindex="0" role="button" data-toggle="popover" data-placement="top" data-html="true" data-content='
-                {{ macros.editable_form_edit('name', '/yard/update/' + yard._id|string, xsrf_form_html()) }}
-                '>{{ yard.name }}</a>
+                {{ macros.editable_form_edit('name', '/product/update/' + product._id|string, xsrf_form_html()) }}
+                '>{{ product.name }}</a>
             </td>
             <td style="max-width:150px">
               <a tabindex="0" data-toggle="popover" data-placement="top" data-html="true" data-content='
-                {{ macros.editable_form_edit('phone', '/yard/update/' + yard._id|string, xsrf_form_html()) }}
-                '>{{ yard.phone }}</a>
+                {{ macros.editable_form_edit('id_from_source', '/product/update/' + product._id|string, xsrf_form_html()) }}
+                '>{{ product.id_from_source }}</a>
             </td>
             <td style="max-width:300px">
               <a tabindex="0" role="button" data-toggle="popover" data-placement="top" data-html="true" data-content='
-                {{ macros.editable_form_edit('address', '/yard/update/' + yard._id|string, xsrf_form_html()) }}
-                '>{{ yard.address }}</a>
+                {{ macros.editable_form_edit('price_for_ref', '/product/update/' + product._id|string, xsrf_form_html()) }}
+                '>{{ product.price_for_ref }}</a>
             </td>
             <td>
               <a tabindex="0" role="button" data-toggle="popover" data-placement="top" data-html="true" data-content='
-                {{ macros.editable_form_delete('/yard/delete/' + yard._id|string, xsrf_form_html()) }}
+                {{ macros.editable_form_delete('/product/delete/' + product._id|string, xsrf_form_html()) }}
                 '><i class="glyphicon glyphicon-remove"></i></a>
             </td>
           </tr>
@@ -134,7 +118,7 @@
         </thead>
       {% else %}
         <h5>
-          <p>没有任何数据哦亲。请<a href="/yard/add">添加</a></p>
+          <p>没有任何数据哦亲。请<a href="/product/add">添加</a></p>
         </h5>
       {% endif %}
     </table>

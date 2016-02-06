@@ -15,6 +15,11 @@ class BaseHandler(RequestHandler):
     route_kwargs = None
     route_name = None
 
+    context = dict()
+    query = ''
+    page = settings.default_active_page
+    count_per_page = settings.default_count_per_page
+
     logger = logging.getLogger("tornado.application")
 
     errors = list()
@@ -50,7 +55,18 @@ class BaseHandler(RequestHandler):
         return None
 
     def prepare(self):
-        pass
+        try:
+            self.query = self.get_argument('q')
+            self.context['q'] = self.query
+        except:
+            pass
+        try:
+            self.page = int(self.get_argument('p'))
+            if self.page < 1:
+                raise
+            self.context['p'] = self.page
+        except:
+            pass
 
     def write_son(self, obj, status_code=200):
         self.set_header("Content-Type", "application/json; charset=UTF-8")

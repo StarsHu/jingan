@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# coding=utf-8
 
 from tornado.web import authenticated
 from tornado.gen import coroutine
@@ -6,6 +6,7 @@ from bson.objectid import ObjectId
 
 from models import Yard, Yard
 from motorengine.query_builder.node import Q
+from motorengine import DESCENDING
 from libs.base_handler import BaseHandler
 from libs.form_error import FormError
 
@@ -17,31 +18,31 @@ class YardPageListHandler(BaseHandler):
     @authenticated
     @coroutine
     def get(self):
-        context = dict()
-        q = self.get_arguments("q")
         query = Q(status='ACTIVE')
-        if len(q) > 0:
-            context['q'] = q[0]
-            q = '.*%s.*' % q[0]
+        if self.query:
+            q = '.*%s.*' % self.query
             query = query & (
                 Q({"name": {'$regex': q}})
                 | Q({"region": {'$regex': q}})
                 | Q({"phone": {'$regex': q}})
-                | Q({"address": {'$regex': q}})
+                | Q({"createress": {'$regex': q}})
             )
-        yards = yield Yard.objects.filter(query).find_all()
-        context['yards'] = yards
-        self.render('yard_list.html', **context)
+        qs = Yard.objects.filter(query).order_by('create_at',
+                                                 direction=DESCENDING)
+        total = yield qs.count()
+        if self.page:
+            skip = self.count_per_page * (self.page - 1)
+            limit = self.count_per_page
+            qs = qs.skip(skip).limit(limit)
+        yards = yield qs.find_all()
+        self.context['total'] = total
+        self.context['yards'] = yards
+        self.render('yard_list.html', **self.context)
 
 
 class YardAddHandler(BaseHandler):
 
-    route_map = r'/yard/add'
-
-    @authenticated
-    @coroutine
-    def get(self):
-        self.render('yard_add.html')
+    route_map = r'/yard/create'
 
     @authenticated
     @coroutine
@@ -50,14 +51,14 @@ class YardAddHandler(BaseHandler):
         region = self.get_argument('region')
         name = self.get_argument('name', '')
         phone = self.get_argument('phone', '')
-        address = self.get_argument('address', '')
+        createress = self.get_argument('createress', '')
 
         yard = Yard(
             source=source,
             region=region,
             name=name,
             phone=phone,
-            address=address,
+            createress=createress,
         )
         yield yard.save()
 
@@ -67,9 +68,9 @@ class YardAddHandler(BaseHandler):
         })
 
 
-class YardEditHandler(BaseHandler):
+class YardUpdateHandler(BaseHandler):
 
-    route_map = r'/yard/edit/(.*)'
+    route_map = r'/yard/update/(.*)'
 
     @authenticated
     @coroutine
@@ -78,7 +79,7 @@ class YardEditHandler(BaseHandler):
         region = self.get_argument('region', None)
         name = self.get_argument('name', None)
         phone = self.get_argument('phone', None)
-        address = self.get_argument('address', None)
+        createress = self.get_argument('createress', None)
 
         yard = yield Yard.objects.get(ObjectId(id))
         if source is not None:
@@ -89,8 +90,8 @@ class YardEditHandler(BaseHandler):
             yard.name = name
         if phone is not None:
             yard.phone = phone
-        if address is not None:
-            yard.address = address
+        if createress is not None:
+            yard.createress = createress
 
         yield yard.save()
         return self.write_son({})

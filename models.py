@@ -55,15 +55,15 @@ class User(BaseDoc):
         return Role.objects.get(self.role_id)
 
 
-class Item(BaseDoc):
+class Product(BaseDoc):
 
-    __collection__ = 'item'
+    __collection__ = 'product'
 
-    uuid = fields.StringField(db_field='uuid', max_length=50, unique=True,
-                              required=True)
+    sku = fields.StringField(db_field='sku', max_length=50, unique=True,
+                             required=True)
     name = fields.StringField(db_field='name', max_length=200, required=True)
-    size = fields.StringField(db_field='size', max_length=50)
-    price_for_ref = fields.DecimalField(db_field='price', required=True,
+    id_from_source = fields.StringField(db_field='id_from_source', max_length=50)
+    price_for_ref = fields.DecimalField(db_field='price_for_ref', required=True,
                                         default=0.0)
 
 
@@ -81,6 +81,21 @@ class Yard(BaseDoc):
 
 
 class Order(BaseDoc):
+    '''
+    the sub_orders format:
+        [
+            {
+                id_from_source: String,
+                dest_from_source: String,
+                items: {
+                    "product": Product,
+                    "count": Int,
+                    "price": Decimal,
+                }
+            }
+        ...
+        ]
+    '''
 
     __collection__ = 'order'
 
@@ -90,5 +105,6 @@ class Order(BaseDoc):
     seller = fields.StringField(db_field='seller', max_length=20, required=True)
     yard = fields.EmbeddedDocumentField(embedded_document_type=Yard)
     deliver_at = DateField(db_field='deliver_at', required=False)
-    content = fields.JsonField(db_field='content', required=True,
-                               default=dict())
+    sub_orders = fields.JsonField(db_field='sub_orders', required=True,
+                                  default=dict())
+

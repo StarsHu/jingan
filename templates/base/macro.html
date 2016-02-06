@@ -8,11 +8,11 @@
     <button class="btn btn-primary btn-sm" type="button" onclick="formAjaxSubmit($(this))"><i class="glyphicon glyphicon-ok"></i></button>
   </div>
 </form>
-{%- endmacro %}"
+{% endmacro %}"
 
 
 {% macro editable_form_select(name, url, items, xsrf) %}
-<form class="form form-inline form-editable" method="POST" action="{{ url }}">
+<form class="form form-inline form-editable" data-toggle="validator" role="form" method="POST" action="{{ url }}">
   {{ xsrf }}
   <div class="form-group">
     <select class="form-control selectpicker show-tick" name="{{ name }}" required style="padding-right: 24px;">
@@ -26,13 +26,41 @@
   </div>
 
 </form>
-{%- endmacro %}"
+{% endmacro %}"
 
 {% macro editable_form_delete(url, xsrf) %}
-<form class="form form-inline form-editable" method="POST" action="{{ url }}">
+<form class="form form-inline form-editable" data-toggle="validator" role="form" method="POST" action="{{ url }}">
   {{ xsrf }}
   <div class="form-group">
     <button class="btn btn-primary btn-sm" type="button" onclick="formAjaxSubmit($(this))">确认删除</button>
   </div>
 </form>
-{%- endmacro %}"
+{% endmacro %}"
+
+{% macro pagination(page, total, onepage_hidden=True) %}
+  {% set cur = page %}
+  {% if not cur %}
+  {% set cur = 1 %}
+  {% endif %}
+  {% set num_pages = total %}
+  {% set min, max = get_page_range(cur, 1, num_pages) %}
+  {% if not onepage_hidden or max > 1 %}
+    <div class="pagination pagination-right">
+      <ul>
+        {% if cur != min %}
+          <li><a href="#" onClick="goPage({{ cur-1 }})">前一页</a></li>
+        {% endif %}
+        {% for i in range(min, max+1) %}
+          {% if i == cur %}
+            <li class="active"><a href="#">{{ i }}</a></li>
+          {% else %}
+            <li><a href="#" onClick="goPage({{ i }})">{{ i }}</a></li>
+          {% endif %}
+        {% endfor %}
+        {% if cur != max %}
+          <li><a href="#" onClick="goPage({{ cur+1 }})">后一页</a></li>
+        {% endif %}
+      </ul>
+    </div>
+  {% endif %}
+{% endmacro %}

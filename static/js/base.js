@@ -59,9 +59,9 @@ function doSearch(query) {
   window.location.href = uri;
 }
 
-function genPage(page) {
+function goPage(page) {
   var uri = URI(window.location.href);
-  uri.removeSearch("page").addSearch({page: page});
+  uri.removeSearch("page").addSearch({p: page});
   window.location.href = uri;
 }
 

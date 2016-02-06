@@ -24,6 +24,11 @@ project_root = os.path.dirname(os.path.abspath(__file__))
 
 template_root = os.path.join(project_root, 'templates/')
 
+# Pagination
+default_active_page = 1
+default_count_per_page = 20
+default_page_range_length = 3
+
 auth_cookie_name = 'user'
 auth_login_url = '/auth/login'
 auth_logout_url = '/auth/logout'
