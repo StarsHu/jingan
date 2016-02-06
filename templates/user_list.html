@@ -1,28 +1,128 @@
-{% extends "base/user_base.html" %}
+{% extends "base/layout.html" %}
 
-{% block user_js_ready %}
-$('.sidebar #user_list').addClass('active');
-{% endblock %}
+{% import 'base/macro.html' as macros %}
 
 {% block main %}
-<table class="table table-hover table-striped">
-{% if users %}
-<tr>
-    <td>用户名</td>
-    <td>上次登录时间</td>
-    <td>角色</td>
-</tr>
-{% for user in users %}
-<tr>
-    <td>{{ user.name }}</td>
-    {% if user.last_login %}
-    <td>{{ user.last_login.strftime("%Y-%m-%d %H:%M:%S") }}</td>
-    {% else %}
-    <td></td>
-    {% endif %}
-    <td>{{ user.role.name }}</td>
-</tr>
-{% endfor %}
-{% endif %}
-</table>
-{% endblock %}
+  <div class="modal fade" id="createUser" tabindex="-1" role="dialog" aria-labelledby="createUser">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title">请输入相关信息</h4>
+        </div>
+        <form class="form form-horizontal" id="createUserForm" method="POST" action="/user/create">
+          <div class="modal-body">
+            {{ xsrf_form_html() }}
+            <div class="form-group">
+              <label for="name" class="col-sm-2 control-label">用户名</label>
+              <div class="col-sm-3">
+                <input type="text" class="form-control" name="name" placeholder="如: zhanghua" required> 
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="password" class="col-sm-2 control-label">密码</label>
+              <div class="col-sm-3">
+                <input type="password" class="form-control" name="password" required> 
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="password_again" class="col-sm-2 control-label">再次输入密码</label>
+              <div class="col-sm-3">
+                <input type="password" class="form-control" name="password_again" required data-match="[name=password]" data-match-error="两次输入的密码不一致" >  
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="source" class="col-sm-2 control-label">角色</label>
+              <div class="col-sm-3">
+                <select class="form-control selectpicker show-tick" name="role_key">
+                  {% for role, role_display in roles_display.items() %}
+                    <option value={{ role }}>{{ role_display }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-sm-2"></div>
+              <div class="col-sm-9 form-error">
+                <span class="form-error-block help-block"></span>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+              <button class="form-submit btn btn-primary" type="submit">保存</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="fixed-table-toolbar">
+    <div class="pull-left">
+      <button type="button" class="btn btn-primary"  data-toggle="modal" data-target="#createUser">添加</button>
+    </div>
+    <div class="pull-right search">
+      <form class="form-inline" action="#" onSubmit="doSearch($('#searchQuery').first().val()); return false;">
+        <div class="input-group">
+          <input type="text" placeholder="搜索" class="form-control" id="searchQuery" value="{{ q }}">
+          <div class="input-group-addon">
+            <a class="btn-link" style="cursor:pointer;" type="submit" >
+              <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+            </a>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+  {% if users %}
+  <div>
+    {{ macros.pagination(p, total) }}
+  </div>
+    <table class="table table-hover table-striped" data-toggle="table">
+      <thead>
+        <tr>
+          <th>用户名</th>
+          <th>角色</th>
+          <th>上次登录时间</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for user in users %}
+          <tr data-index={{user._id}}>
+            <td style="max-width:80px">
+              <a tabindex="0" role="button" data-toggle="popover" data-placement="top" data-html="true" data-content='
+              {{ macros.editable_form_edit('name', '/user/update/' + user._id|string, xsrf_form_html()) }}
+              '>{{ user.name }}</a>
+            </td>
+            <td>
+              <a tabindex="0" role="button" data-toggle="popover" data-placement="top" data-html="true" data-content='
+              {{ macros.editable_form_select('role_key', '/user/update/' + user._id|string, roles_display.items(), xsrf_form_html()) }}
+              '>{{ user.role.name }}</a>
+            </td>
+            {% if user.last_login %}
+              <td>{{ user.last_login.strftime("%Y-%m-%d %H:%M:%S") }}</td>
+            {% else %}
+              <td></td>
+            {% endif %}
+            <td style="max-width:300px">
+              <a tabindex="0" role="button" data-toggle="popover" data-placement="top" data-html="true" data-content='
+              {{ macros.editable_form_edit('address', '/user/update/' + user._id|string, xsrf_form_html()) }}
+              '>{{ user.address }}</a>
+            </td>
+            <td>
+              <a tabindex="0" role="button" data-toggle="popover" data-placement="top" data-html="true" data-content='
+                {{ macros.editable_form_delete('/user/delete/' + user._id|string, xsrf_form_html()) }}
+                '><i class="glyphicon glyphicon-remove"></i></a>
+            </td>
+          </tr>
+        {% endfor %}
+        </thead>
+      {% else %}
+        <h5>
+          <p>没有任何数据哦亲!</p>
+        </h5>
+      {% endif %}
+    </table>
+  {% endblock %}

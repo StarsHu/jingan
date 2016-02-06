@@ -4,7 +4,7 @@ from tornado.web import authenticated
 from tornado.gen import coroutine
 from bson.objectid import ObjectId
 
-from models import Product, Product
+from models import Product
 from motorengine.query_builder.node import Q
 from motorengine import DESCENDING
 from libs.base_handler import BaseHandler
@@ -22,13 +22,13 @@ class ProductPageListHandler(BaseHandler):
         if self.query:
             q = '.*%s.*' % self.query
             query = query & (
-                Q({"name": {'$regex': q}})
-                | Q({"region": {'$regex': q}})
-                | Q({"phone": {'$regex': q}})
-                | Q({"createress": {'$regex': q}})
+                Q({"sku": {'$regex': q}})
+                | Q({"name": {'$regex': q}})
+                | Q({"id_from_source": {'$regex': q}})
+                | Q({"price_for_ref": {'$regex': q}})
             )
         qs = Product.objects.filter(query).order_by('create_at',
-                                                 direction=DESCENDING)
+                                                    direction=DESCENDING)
         total = yield qs.count()
         if self.page:
             skip = self.count_per_page * (self.page - 1)
@@ -40,7 +40,7 @@ class ProductPageListHandler(BaseHandler):
         self.render('product_list.html', **self.context)
 
 
-class ProductAddHandler(BaseHandler):
+class ProductCreateHandler(BaseHandler):
 
     route_map = r'/product/create'
 
@@ -60,7 +60,6 @@ class ProductAddHandler(BaseHandler):
         )
         yield product.save()
 
-        products = yield Product.objects.find_all()
         return self.write_son({
             'redirect': '/product/list',
         })

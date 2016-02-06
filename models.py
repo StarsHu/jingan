@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# coding=utf-8
 
 import hashlib
 from motorengine import fields
@@ -13,7 +13,6 @@ class Role(BaseDoc):
 
     __collection__ = 'role'
 
-    STATUS_LIST = ['ERROR', 'ACTIVE', 'DELETED']
     key = fields.StringField(db_field='key', max_length=50, unique=True,
                              required=True)
     name = fields.StringField(db_field='name', max_length=50, required=True)
@@ -24,14 +23,12 @@ class User(BaseDoc):
     __collection__ = 'user'
     __lazy__ = False
 
-    STATUS_LIST = ['ERROR', 'ACTIVE', 'DELETED']
-
     name = fields.StringField(db_field='name', max_length=50, unique=True,
                               required=True)
     password = fields.StringField(db_field='password', max_length=50,
                                   required=True)
     last_login = fields.DateTimeField(db_field='last_login', required=False)
-    role = fields.ReferenceField(reference_document_type=Role)
+    role = fields.ReferenceField(reference_document_type=Role, required=True)
 
     @classmethod
     def encode_raw_password(cls, password):
@@ -62,7 +59,8 @@ class Product(BaseDoc):
     sku = fields.StringField(db_field='sku', max_length=50, unique=True,
                              required=True)
     name = fields.StringField(db_field='name', max_length=200, required=True)
-    id_from_source = fields.StringField(db_field='id_from_source', max_length=50)
+    id_from_source = fields.StringField(db_field='id_from_source',
+                                        max_length=50)
     price_for_ref = fields.DecimalField(db_field='price_for_ref', required=True,
                                         default=0.0)
 
@@ -107,4 +105,3 @@ class Order(BaseDoc):
     deliver_at = DateField(db_field='deliver_at', required=False)
     sub_orders = fields.JsonField(db_field='sub_orders', required=True,
                                   default=dict())
-

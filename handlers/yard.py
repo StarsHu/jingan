@@ -4,7 +4,7 @@ from tornado.web import authenticated
 from tornado.gen import coroutine
 from bson.objectid import ObjectId
 
-from models import Yard, Yard
+from models import Yard
 from motorengine.query_builder.node import Q
 from motorengine import DESCENDING
 from libs.base_handler import BaseHandler
@@ -25,7 +25,7 @@ class YardPageListHandler(BaseHandler):
                 Q({"name": {'$regex': q}})
                 | Q({"region": {'$regex': q}})
                 | Q({"phone": {'$regex': q}})
-                | Q({"createress": {'$regex': q}})
+                | Q({"address": {'$regex': q}})
             )
         qs = Yard.objects.filter(query).order_by('create_at',
                                                  direction=DESCENDING)
@@ -40,7 +40,7 @@ class YardPageListHandler(BaseHandler):
         self.render('yard_list.html', **self.context)
 
 
-class YardAddHandler(BaseHandler):
+class YardCreateHandler(BaseHandler):
 
     route_map = r'/yard/create'
 
@@ -51,18 +51,17 @@ class YardAddHandler(BaseHandler):
         region = self.get_argument('region')
         name = self.get_argument('name', '')
         phone = self.get_argument('phone', '')
-        createress = self.get_argument('createress', '')
+        address = self.get_argument('address', '')
 
         yard = Yard(
             source=source,
             region=region,
             name=name,
             phone=phone,
-            createress=createress,
+            address=address,
         )
         yield yard.save()
 
-        yards = yield Yard.objects.find_all()
         return self.write_son({
             'redirect': '/yard/list',
         })
@@ -79,7 +78,7 @@ class YardUpdateHandler(BaseHandler):
         region = self.get_argument('region', None)
         name = self.get_argument('name', None)
         phone = self.get_argument('phone', None)
-        createress = self.get_argument('createress', None)
+        address = self.get_argument('address', None)
 
         yard = yield Yard.objects.get(ObjectId(id))
         if source is not None:
@@ -90,8 +89,8 @@ class YardUpdateHandler(BaseHandler):
             yard.name = name
         if phone is not None:
             yard.phone = phone
-        if createress is not None:
-            yard.createress = createress
+        if address is not None:
+            yard.address = address
 
         yield yard.save()
         return self.write_son({})
