@@ -14,8 +14,8 @@
           <div class="modal-body">
             {{ xsrf_form_html() }}
             <div class="form-group">
-              <label for="source" class="col-sm-2 control-label">平台</label>
-              <div class="col-sm-3">
+              <label for="source" class="col-sm-3 control-label">平台</label>
+              <div class="input-group col-sm-3">
                 <select class="form-control selectpicker show-tick" name="source">
                   {% for source, source_display in handler.SOURCE_LIST_DISPLAY.items() %}
                     <option value={{ source }}>{{ source_display }}</option>
@@ -24,32 +24,32 @@
               </div>
             </div>
             <div class="form-group">
-              <label for="seller" class="col-sm-2 control-label">仓位</label>
-              <div class="col-sm-3">
+              <label for="seller" class="col-sm-3 control-label">仓位</label>
+              <div class="input-group col-sm-3">
                 <input type="text" class="form-control" name="region" placeholder="如: 华南(广州)" required> 
               </div>
             </div>
             <div class="form-group">
-              <label for="name" class="col-sm-2 control-label">姓名</label>
-              <div class="col-sm-3">
+              <label for="name" class="col-sm-3 control-label">姓名</label>
+              <div class="input-group col-sm-3">
                 <input type="text" class="form-control" name="name" placeholder="如: 张三" required> 
               </div>
             </div>
             <div class="form-group">
-              <label for="phone" class="col-sm-2 control-label">电话</label>
-              <div class="col-sm-6">
+              <label for="phone" class="col-sm-3 control-label">电话</label>
+              <div class="input-group col-sm-6">
                 <input type="text" class="form-control" name="phone" placeholder="如: 13712312312, 021-12343214" required> 
               </div>
             </div>
             <div class="form-group">
-              <label for="address" class="col-sm-2 control-label">地址</label>
-              <div class="col-sm-9">
-                <input type="text" class="form-control" name="address" placeholder="如: 天津市武清区京滨大道88号" required> 
+              <label for="address" class="col-sm-3 control-label">地址</label>
+              <div class="input-group col-sm-7">
+                <textarea rows="2" class="form-control" name="address" placeholder="如: 天津市武清区京滨大道88号" required></textarea>
               </div>
             </div>
             <div class="form-group">
-              <div class="col-sm-2"></div>
-              <div class="col-sm-9 form-error">
+              <div class="col-sm-3"></div>
+              <div class="input-group col-sm-9 form-error">
                 <span class="form-error-block help-block"></span>
               </div>
             </div>
@@ -62,29 +62,8 @@
       </div>
     </div>
   </div>
-
-
-  <div class="fixed-table-toolbar">
-    <div class="pull-left">
-      <button type="button" class="btn btn-primary"  data-toggle="modal" data-target="#createYard">添加</button>
-    </div>
-    <div class="pull-right search">
-      <form class="form-inline" action="#" onSubmit="doSearch($('#searchQuery').first().val()); return false;">
-        <div class="input-group">
-          <input type="text" placeholder="搜索" class="form-control" id="searchQuery" value="{{ q }}">
-          <div class="input-group-addon">
-            <a class="btn-link" style="cursor:pointer;" type="submit" >
-              <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
-            </a>
-          </div>
-        </div>
-      </form>
-    </div>
-  </div>
+  {{ macros.list_nav('#createYard') }}
   {% if yards %}
-  <div>
-    {{ macros.pagination(p, total) }}
-  </div>
     <table class="table table-hover table-striped" data-toggle="table">
       <thead>
         <tr>
@@ -138,4 +117,7 @@
         </h5>
       {% endif %}
     </table>
+    <div class="pull-right">
+      {{ macros.pagination(p, total) }}
+    </div>
   {% endblock %}

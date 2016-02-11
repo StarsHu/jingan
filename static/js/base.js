@@ -61,7 +61,7 @@ function doSearch(query) {
 
 function goPage(page) {
   var uri = URI(window.location.href);
-  uri.removeSearch("page").addSearch({p: page});
+  uri.removeSearch("p").addSearch({p: page});
   window.location.href = uri;
 }
 

@@ -35,7 +35,7 @@ class YardPageListHandler(BaseHandler):
             limit = self.count_per_page
             qs = qs.skip(skip).limit(limit)
         yards = yield qs.find_all()
-        self.context['total'] = total
+        self.context['total'] = total / self.count_per_page
         self.context['yards'] = yards
         self.render('yard_list.html', **self.context)
 

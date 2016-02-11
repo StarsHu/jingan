@@ -1,31 +1,3 @@
 html, body {
   overflow-x: hidden;
 }
-
-.pagination {
-  width:95%;
-  text-align:right;
-  font-size:14px;
-  color:#666666;
-  padding:20px;
-}
-
-.pagination span.page-num {
-  text-align:center;
-  display:inline-block;
-  margin:1px;
-  padding:2px;
-  min-width:16px;
-  min-height:16px;
-  color:#FFFFFF;
-  background:#F48C19;
-  cursor:pointer;
-  vertical-align:bottom;
-}
-
-.pagination span.current{
-  color:#000000;
-  border:2px solid black;
-  background:none;
-
-}

@@ -45,22 +45,46 @@
   {% set num_pages = total %}
   {% set min, max = get_page_range(cur, 1, num_pages) %}
   {% if not onepage_hidden or max > 1 %}
-    <div class="pagination pagination-right">
-      <ul>
-        {% if cur != min %}
-          <li><a href="#" onClick="goPage({{ cur-1 }})">前一页</a></li>
+    <ul class="pagination">
+      {% if cur != min %}
+        <li><a href="#" aria-label="Previous" onClick="goPage({{ cur-1 }})"><span>&laquo;</span></a></li>
+      {% endif %}
+      {% for i in range(min, max+1) %}
+        {% if i == cur %}
+          <li class="active"><a href="#">{{ i }}</a></li>
+        {% else %}
+          <li><a href="#" onClick="goPage({{ i }})">{{ i }}</a></li>
         {% endif %}
-        {% for i in range(min, max+1) %}
-          {% if i == cur %}
-            <li class="active"><a href="#">{{ i }}</a></li>
-          {% else %}
-            <li><a href="#" onClick="goPage({{ i }})">{{ i }}</a></li>
-          {% endif %}
-        {% endfor %}
-        {% if cur != max %}
-          <li><a href="#" onClick="goPage({{ cur+1 }})">后一页</a></li>
-        {% endif %}
-      </ul>
-    </div>
+      {% endfor %}
+      {% if cur != max %}
+        <li><a href="#" aria-label="Next" onClick="goPage({{ cur+1 }})"><span>&raquo;</span></a></li>
+      {% endif %}
+    </ul>
   {% endif %}
+{% endmacro %}
+
+{% macro list_nav(add_model_selector) %}
+<nav class="navbar">
+  <div class="col-sm-12">
+    <ul class="nav navbar-nav">
+      <li>
+        <button type="button" class="btn btn-primary"  data-toggle="modal" data-target="{{ add_model_selector }}">添加</button>
+      </li>
+    </ul>
+    <ul class="nav navbar-nav navbar-right">
+      <li>
+        <form class="form-inline" action="#" onSubmit="doSearch($('#searchQuery').first().val()); return false;">
+          <div class="input-group">
+            <input type="text" placeholder="搜索" class="form-control" id="searchQuery" value="{{ q }}">
+            <div class="input-group-addon">
+              <a class="btn-link" style="cursor:pointer;" type="submit" >
+                <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+              </a>
+            </div>
+          </div>
+        </form>
+      </li>
+    </ul>
+  </div>
+</nav>
 {% endmacro %}
