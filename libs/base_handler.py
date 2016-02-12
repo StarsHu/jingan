@@ -8,6 +8,14 @@ from tornado.web import URLSpec
 
 from libs.json_encoder import ComplexEncoder
 
+def authorized(func):
+
+    def __wrapper(*args, **kwargs):
+        import pdb; pdb.set_trace()
+        return func(*args, **kwargs)
+
+    return __wrapper
+
 
 class BaseHandler(RequestHandler):
 

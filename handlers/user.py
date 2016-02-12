@@ -7,7 +7,7 @@ from bson.objectid import ObjectId
 from models import User, Role
 from motorengine.query_builder.node import Q
 from motorengine import DESCENDING
-from libs.base_handler import BaseHandler
+from libs.base_handler import BaseHandler, authorized
 from libs.form_error import FormError
 
 
@@ -32,7 +32,7 @@ class UserPageListHandler(BaseHandler):
         users = yield qs.find_all()
         roles = yield Role.objects.find_all()
 
-        self.context['total'] = total
+        self.context['total'] = total / self.count_per_page
         self.context['users'] = users
         self.context['roles_display'] = { r.key: r.name for r in roles }
         self.render('user_list.html', **self.context)

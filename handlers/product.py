@@ -35,7 +35,7 @@ class ProductPageListHandler(BaseHandler):
             limit = self.count_per_page
             qs = qs.skip(skip).limit(limit)
         products = yield qs.find_all()
-        self.context['total'] = total
+        self.context['total'] = total / self.count_per_page
         self.context['products'] = products
         self.render('product_list.html', **self.context)
 
