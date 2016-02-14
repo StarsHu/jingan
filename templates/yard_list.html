@@ -80,7 +80,7 @@
           <tr data-index={{yard._id}}>
             <td>
               <a tabindex="0" role="button" data-toggle="popover" data-placement="top" data-html="true" data-content='
-                {{ macros.editable_form_select('source', '/yard/update/' + yard._id|string, handler.SOURCE_LIST_DISPLAY.items(), xsrf_form_html()) }}
+                {{ macros.editable_form_select('source', '/yard/update/' + yard._id|string, handler.SOURCE_LIST_DISPLAY.items(), xsrf_form_html(), yard.source) }}
                 '>{{ handler.SOURCE_LIST_DISPLAY.get(yard.source) }}</a>
             </td>
             <td>

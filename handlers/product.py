@@ -7,7 +7,7 @@ from bson.objectid import ObjectId
 from models import Product
 from motorengine.query_builder.node import Q
 from motorengine import DESCENDING
-from libs.base_handler import BaseHandler
+from libs.base_handler import BaseHandler, authorized
 from libs.form_error import FormError
 
 
@@ -16,6 +16,7 @@ class ProductPageListHandler(BaseHandler):
     route_map = r'/product/list'
 
     @authenticated
+    @authorized(['admin'])
     @coroutine
     def get(self):
         query = Q(status='ACTIVE')
@@ -45,6 +46,7 @@ class ProductCreateHandler(BaseHandler):
     route_map = r'/product/create'
 
     @authenticated
+    @authorized(['admin'])
     @coroutine
     def post(self):
         sku = self.get_argument('sku')
@@ -70,6 +72,7 @@ class ProductUpdateHandler(BaseHandler):
     route_map = r'/product/update/(.*)'
 
     @authenticated
+    @authorized(['admin'])
     @coroutine
     def post(self, id):
         sku = self.get_argument('sku', None)
@@ -96,6 +99,7 @@ class ProductDeleteHandler(BaseHandler):
     route_map = r'/product/delete/(.*)'
 
     @authenticated
+    @authorized(['admin'])
     @coroutine
     def post(self, id):
         product = yield Product.objects.get(ObjectId(id))

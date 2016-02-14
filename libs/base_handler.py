@@ -2,19 +2,28 @@
 
 import json
 import settings
+import functools
 import logging
-from tornado.web import RequestHandler
-from tornado.web import URLSpec
-
+import datetime
+from tornado.web import RequestHandler, HTTPError, URLSpec
+from tornado.gen import coroutine
+from bson.objectid import ObjectId
+from models import User, Role
 from libs.json_encoder import ComplexEncoder
 
-def authorized(func):
 
-    def __wrapper(*args, **kwargs):
-        import pdb; pdb.set_trace()
-        return func(*args, **kwargs)
-
-    return __wrapper
+def authorized(role_keys=['admin']):
+    def __authorized(func):
+        @functools.wraps(func)
+        def __wrapper(self, *args, **kwargs):
+            try:
+                if self.current_user.role.key in role_keys:
+                    return func(self, *args, **kwargs)
+            except:
+                pass
+            self.redirect("/")
+        return __wrapper
+    return __authorized
 
 
 class BaseHandler(RequestHandler):
@@ -52,17 +61,19 @@ class BaseHandler(RequestHandler):
     def from_son(cls, string):
         return json.loads(string)
 
-    def get_current_user(self):
+    @coroutine
+    def prepare(self):
         auth_cookie = self.get_secure_cookie(settings.auth_cookie_name, None)
         if auth_cookie:
             try:
-                self.current_user = self.from_son(str(auth_cookie, 'utf-8'))
-                return self.current_user
+                user_id = str(auth_cookie, 'utf-8')
+                if user_id:
+                    user = yield User.objects.get(ObjectId(user_id))
+                    user.last_login = datetime.datetime.now()
+                    self.current_user = user
+                    user.save()
             except Exception as e:
                 self.logger.info(e)
-        return None
-
-    def prepare(self):
         try:
             self.query = self.get_argument('q')
             self.context['q'] = self.query

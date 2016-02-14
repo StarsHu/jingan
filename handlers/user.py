@@ -16,6 +16,7 @@ class UserPageListHandler(BaseHandler):
     route_map = r'/user/list'
 
     @authenticated
+    @authorized(['admin'])
     @coroutine
     def get(self):
         query = Q(status='ACTIVE')
@@ -34,7 +35,7 @@ class UserPageListHandler(BaseHandler):
 
         self.context['total'] = total / self.count_per_page
         self.context['users'] = users
-        self.context['roles_display'] = { r.key: r.name for r in roles }
+        self.context['roles_display'] = {r.key: r.name for r in roles}
         self.render('user_list.html', **self.context)
 
 
@@ -43,6 +44,7 @@ class UserCreateHandler(BaseHandler):
     route_map = r'/user/create'
 
     @authenticated
+    @authorized(['admin'])
     @coroutine
     def post(self):
         name = self.get_argument('name')
@@ -69,25 +71,15 @@ class UserUpdateHandler(BaseHandler):
     route_map = r'/user/update/(.*)'
 
     @authenticated
+    @authorized(['admin'])
     @coroutine
     def post(self, id):
-        source = self.get_argument('source', None)
-        region = self.get_argument('region', None)
-        name = self.get_argument('name', None)
-        phone = self.get_argument('phone', None)
-        createress = self.get_argument('createress', None)
+        role_key = self.get_argument('role_key', None)
 
         user = yield User.objects.get(ObjectId(id))
-        if source is not None:
-            user.source = source
-        if region is not None:
-            user.region = region
-        if name is not None:
-            user.name = name
-        if phone is not None:
-            user.phone = phone
-        if createress is not None:
-            user.createress = createress
+        if role_key is not None:
+            role = yield Role.objects.get(key=role_key)
+            user.role = role
 
         yield user.save()
         return self.write_son({})
@@ -98,6 +90,7 @@ class UserDeleteHandler(BaseHandler):
     route_map = r'/user/delete/(.*)'
 
     @authenticated
+    @authorized(['admin'])
     @coroutine
     def post(self, id):
         user = yield User.objects.get(ObjectId(id))

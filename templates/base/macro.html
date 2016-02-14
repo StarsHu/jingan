@@ -11,13 +11,13 @@
 {% endmacro %}"
 
 
-{% macro editable_form_select(name, url, items, xsrf) %}
+{% macro editable_form_select(name, url, items, xsrf, current=None) %}
 <form class="form form-inline form-editable" data-toggle="validator" role="form" method="POST" action="{{ url }}">
   {{ xsrf }}
   <div class="form-group">
     <select class="form-control selectpicker show-tick" name="{{ name }}" required style="padding-right: 24px;">
       {% for item, item_display in items %}
-      <option value={{ item }}>{{ item_display }}</option>
+      <option value={{ item }} {% if item == current %} selected {% endif %}>{{ item_display }}</option>
       {% endfor %}
     </select>
   </div>

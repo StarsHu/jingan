@@ -15,7 +15,7 @@ class LoginHandler(BaseHandler):
     route_map = settings.auth_login_url
 
     def get(self):
-        if self.get_current_user():
+        if self.current_user:
             return self.redirect(self.get_argument('next', '/'))
         else:
             return self.render('auth/login.html')
@@ -37,16 +37,7 @@ class LoginHandler(BaseHandler):
             yield user.save()
             self.set_secure_cookie(
                 settings.auth_cookie_name,
-                self.to_son({
-                    '_id': user._id,
-                    'name': user.name,
-                    'last_login': user.last_login,
-                    'role': {
-                        '_id': user.role._id,
-                        'key': user.role.key,
-                        'name': user.role.name,
-                    },
-                }),
+                str(user._id),
                 expire_days
             )
             self.logger.info('%s %s login.' % (user._id, user.name))
@@ -79,7 +70,7 @@ class ChangePasswordHandler(BaseHandler):
     @coroutine
     def post(self):
         old_password = self.get_argument('old_password')
-        user = yield User.objects.get(name=self.current_user['name'])
+        user = yield User.objects.get(name=self.current_user.name)
         if not user.check_raw_password:
             return self.write_son({
                 'errors': [FormError(u"旧密码输入不一致.")]

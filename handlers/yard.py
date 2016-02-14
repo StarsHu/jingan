@@ -7,7 +7,7 @@ from bson.objectid import ObjectId
 from models import Yard
 from motorengine.query_builder.node import Q
 from motorengine import DESCENDING
-from libs.base_handler import BaseHandler
+from libs.base_handler import BaseHandler, authorized
 from libs.form_error import FormError
 
 
@@ -16,6 +16,7 @@ class YardPageListHandler(BaseHandler):
     route_map = r'/yard/list'
 
     @authenticated
+    @authorized(['admin'])
     @coroutine
     def get(self):
         query = Q(status='ACTIVE')
@@ -45,6 +46,7 @@ class YardCreateHandler(BaseHandler):
     route_map = r'/yard/create'
 
     @authenticated
+    @authorized(['admin'])
     @coroutine
     def post(self):
         source = self.get_argument('source')
@@ -72,6 +74,7 @@ class YardUpdateHandler(BaseHandler):
     route_map = r'/yard/update/(.*)'
 
     @authenticated
+    @authorized(['admin'])
     @coroutine
     def post(self, id):
         source = self.get_argument('source', None)
@@ -101,6 +104,7 @@ class YardDeleteHandler(BaseHandler):
     route_map = r'/yard/delete/(.*)'
 
     @authenticated
+    @authorized(['admin'])
     @coroutine
     def post(self, id):
         yard = yield Yard.objects.get(ObjectId(id))

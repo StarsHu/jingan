@@ -63,21 +63,17 @@
         <tr>
           <th>用户名</th>
           <th>角色</th>
-          <th>上次登录时间</th>
+          <th>最近一次活跃时间</th>
           <th></th>
         </tr>
       </thead>
       <tbody>
         {% for user in users %}
           <tr data-index={{user._id}}>
-            <td style="max-width:80px">
-              <a tabindex="0" role="button" data-toggle="popover" data-placement="top" data-html="true" data-content='
-              {{ macros.editable_form_edit('name', '/user/update/' + user._id|string, xsrf_form_html()) }}
-              '>{{ user.name }}</a>
-            </td>
+            <td style="max-width:80px">{{ user.name }}</td>
             <td>
               <a tabindex="0" role="button" data-toggle="popover" data-placement="top" data-html="true" data-content='
-              {{ macros.editable_form_select('role_key', '/user/update/' + user._id|string, roles_display.items(), xsrf_form_html()) }}
+              {{ macros.editable_form_select('role_key', '/user/update/' + user._id|string, roles_display.items(), xsrf_form_html(), user.role.key) }}
               '>{{ user.role.name }}</a>
             </td>
             {% if user.last_login %}
@@ -85,11 +81,6 @@
             {% else %}
               <td></td>
             {% endif %}
-            <td style="max-width:300px">
-              <a tabindex="0" role="button" data-toggle="popover" data-placement="top" data-html="true" data-content='
-              {{ macros.editable_form_edit('address', '/user/update/' + user._id|string, xsrf_form_html()) }}
-              '>{{ user.address }}</a>
-            </td>
             <td>
               <a tabindex="0" role="button" data-toggle="popover" data-placement="top" data-html="true" data-content='
                 {{ macros.editable_form_delete('/user/delete/' + user._id|string, xsrf_form_html()) }}

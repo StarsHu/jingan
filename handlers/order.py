@@ -4,7 +4,7 @@ from tornado.web import authenticated
 from tornado.gen import coroutine
 
 from models import Order, Yard
-from libs.base_handler import BaseHandler
+from libs.base_handler import BaseHandler, authorized
 
 
 class OrderListHandler(BaseHandler):
@@ -12,6 +12,7 @@ class OrderListHandler(BaseHandler):
     route_map = r'/order/list'
 
     @authenticated
+    @authorized(role_keys=['salesmanager', 'admin'])
     @coroutine
     def get(self):
         orders = yield Order.objects.filter(status='ACTIVE').find_all()
