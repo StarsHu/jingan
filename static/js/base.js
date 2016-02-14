@@ -73,11 +73,12 @@ $(function () {
 
   $('[data-toggle="popover"]').popover();
 
-  $('.datepicker').datepicker({
+  $('.datetimepicker').datetimepicker({
     language: 'zh-CN',
     todayBtn: 'linked',
     todayHighlight: 'true',
-    autoclose: true
+    autoclose: true,
+    minView: 2
   });
 
   $('[data-toggle="offcanvas"]').click(function () {

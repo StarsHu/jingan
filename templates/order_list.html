@@ -1,24 +1,109 @@
-{% extends "base/order_base.html" %}
+{% extends "base/layout.html" %}
 
-{% block order_js_ready %}
-$('.sidebar #order_list').addClass('active');
-{% endblock %}
+{% import 'base/macro.html' as macros %}
 
 {% block main %}
-<table class="table table-hover table-striped">
-{% if orders %}
-<tr>
-    <td>用户名</td>
-    <td>上次登录时间</td>
-    <td>角色</td>
-</tr>
-{% for order in orders %}
-<tr>
-    <td>{{ order.name }}</td>
-    <td>{{ order.last_login.strftime("%Y-%m-%d %H:%M:%S") }}</td>
-    <td>{{ order.role.name }}</td>
-</tr>
-{% endfor %}
-{% endif %}
-</table>
-{% endblock %}
+  <div class="modal fade" id="createOrder" tabindex="-1" role="dialog" aria-labelledby="createOrder">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title">请输入相关信息</h4>
+        </div>
+        <form class="form form-horizontal" id="createOrderForm" method="POST" action="/order/create">
+          <div class="modal-body">
+            {{ xsrf_form_html() }}
+            <div class="form-group">
+              <label for="source" class="col-sm-3 control-label">平台</label>
+              <div class="input-group col-sm-3">
+                <select class="form-control selectpicker show-tick" name="source">
+                  {% for source, source_display in handler.SOURCE_LIST_DISPLAY.items() %}
+                    <option value={{ source }}>{{ source_display }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="name" class="col-sm-3 control-label">销售员</label>
+              <div class="input-group col-sm-3">
+                <input type="text" class="form-control" name="seller" placeholder="如: 张三" required> 
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="yard_id" class="col-sm-3 control-label">收货人</label>
+              <div class="input-group col-sm-7">
+                <select class="form-control selectpicker show-tick" name="yard_id" data-live-search="true">
+                  {% for yard in yards %}
+                    <option value={{ yard._id }} title="{{ ' '.join([handler.SOURCE_LIST_DISPLAY[yard.source], yard.region, yard.name, yard.phone]) }}">
+                    {{ ' '.join([handler.SOURCE_LIST_DISPLAY[yard.source], yard.region, yard.name, yard.phone, yard.address]) }}
+                    </option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="deliver_at" class="col-sm-3 control-label">发货日期</label>
+              <div class="input-group col-sm-3">
+                <input class="form-control datetimepicker" name="deliver_at" data-date-format="yyyy-mm-dd" required readonly> 
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-sm-3"></div>
+              <div class="input-group col-sm-9 form-error">
+                <span class="form-error-block help-block"></span>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+              <button class="form-submit btn btn-primary" type="submit">保存</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  {{ macros.list_nav('#createOrder') }}
+  {% if orders %}
+    <table class="table table-hover table-striped" data-toggle="table">
+      <thead>
+        <tr>
+          <th>平台</th>
+          <th>销售员</th>
+          <th>收货人</th>
+          <th>递送日期</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for order in orders %}
+          <tr data-index={{order._id}}>
+            <td>
+              <a tabindex="0" role="button" data-toggle="popover" data-placement="top" data-html="true" data-content='
+                {{ macros.editable_form_select('source', '/order/update/' + order._id|string, handler.SOURCE_LIST_DISPLAY.items(), xsrf_form_html(), order.source) }}
+                '>{{ handler.SOURCE_LIST_DISPLAY.get(order.source) }}</a>
+            </td>
+            <td>
+              <a tabindex="0" role="button" data-toggle="popover" data-placement="top" data-html="true" data-content='
+                {{ macros.editable_form_edit('seller', '/order/update/' + order._id|string, xsrf_form_html()) }}
+                '>{{ order.seller }}</a>
+            </td>
+            <td>{{ order.yard.name }}</td>
+            <td>{{ order.deliver_at.strftime("%Y-%m-%d") }}</td>
+            <td>
+              <a tabindex="0" role="button" data-toggle="popover" data-placement="top" data-html="true" data-content='
+                {{ macros.editable_form_delete('/order/delete/' + order._id|string, xsrf_form_html()) }}
+                '><i class="glyphicon glyphicon-remove"></i></a>
+            </td>
+          </tr>
+        {% endfor %}
+        </thead>
+      {% else %}
+        <h5>
+          <p>没有任何数据哦亲!</p>
+        </h5>
+      {% endif %}
+    </table>
+    <div class="pull-right">
+      {{ macros.pagination(p, total) }}
+    </div>
+  {% endblock %}

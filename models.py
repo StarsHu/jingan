@@ -84,7 +84,7 @@ class Order(BaseDoc):
         [
             {
                 id_from_source: String,
-                dest_from_source: String,
+                warehouse_from_source: String,
                 items: {
                     "product": Product,
                     "count": Int,
@@ -97,8 +97,6 @@ class Order(BaseDoc):
 
     __collection__ = 'order'
 
-    uuid = fields.StringField(db_field='uuid', max_length=50, unique=True,
-                              required=True)
     source = fields.StringField(db_field='source', max_length=20, required=True)
     seller = fields.StringField(db_field='seller', max_length=20, required=True)
     yard = fields.EmbeddedDocumentField(embedded_document_type=Yard)
