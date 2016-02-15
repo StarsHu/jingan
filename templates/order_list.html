@@ -4,18 +4,18 @@
 
 {% block main %}
   <div class="modal fade" id="createOrder" tabindex="-1" role="dialog" aria-labelledby="createOrder">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
           <h4 class="modal-title">请输入相关信息</h4>
         </div>
-        <form class="form form-horizontal" id="createOrderForm" method="POST" action="/order/create">
+        <form class="form-horizontal" id="createOrderForm" method="POST" action="/order/create">
           <div class="modal-body">
             {{ xsrf_form_html() }}
             <div class="form-group">
               <label for="source" class="col-sm-3 control-label">平台</label>
-              <div class="input-group col-sm-3">
+              <div class="input-group col-sm-2">
                 <select class="form-control selectpicker show-tick" name="source">
                   {% for source, source_display in handler.SOURCE_LIST_DISPLAY.items() %}
                     <option value={{ source }}>{{ source_display }}</option>
@@ -25,13 +25,13 @@
             </div>
             <div class="form-group">
               <label for="name" class="col-sm-3 control-label">销售员</label>
-              <div class="input-group col-sm-3">
+              <div class="input-group col-sm-2">
                 <input type="text" class="form-control" name="seller" placeholder="如: 张三" required> 
               </div>
             </div>
             <div class="form-group">
               <label for="yard_id" class="col-sm-3 control-label">收货人</label>
-              <div class="input-group col-sm-7">
+              <div class="input-group col-sm-4">
                 <select class="form-control selectpicker show-tick" name="yard_id" data-live-search="true">
                   {% for yard in yards %}
                     <option value={{ yard._id }} title="{{ ' '.join([handler.SOURCE_LIST_DISPLAY[yard.source], yard.region, yard.name, yard.phone]) }}">
@@ -43,7 +43,7 @@
             </div>
             <div class="form-group">
               <label for="deliver_at" class="col-sm-3 control-label">发货日期</label>
-              <div class="input-group col-sm-3">
+              <div class="input-group col-sm-2">
                 <input class="form-control datetimepicker" name="deliver_at" data-date-format="yyyy-mm-dd" required readonly> 
               </div>
             </div>
@@ -53,8 +53,75 @@
                 <span class="form-error-block help-block"></span>
               </div>
             </div>
+            <hr>
+            <div class="suborders">
+              <div class="suborder example">
+                <button class="close" aria-label="Close" type="button" onClick="$(this).parents('.suborder').first().remove();">
+                  <span aria-hidden="true">×</span>
+                </button>
+                <div class="form-group">
+                  <label for="id_from_source" class="col-sm-3 control-label">订单号</label>
+                  <div class="input-group col-sm-2">
+                    <input type="text" class="form-control" name="id_from_source" placeholder="如: 11976990" required> 
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="warehouse_from_source" class="col-sm-3 control-label">仓库</label>
+                  <div class="input-group col-sm-4">
+                    <input type="text" class="form-control" name="warehouse_from_source" placeholder="如: 武汉 百货服装仓B2库" required> 
+                  </div>
+                </div>
+                <div>
+                  <table class="table .table-striped .table-hover">
+                    <thead>
+                      <tr>
+                        <th>商品名称</th>
+                        <th>数量</th>
+                        <th>单价</th>
+                        <th>
+                          <a href="#" onClick="addItem($(this).parents('table').first());">
+                            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                          </a>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr class="item example">
+                        <td>
+                          <div class="input-group">
+                            <select class="form-control selectpicker show-tick" name="product_id" data-live-search="true">
+                              {% for product in products %}
+                                <option value={{ product._id }} title="{{ ' '.join([product.sku, product.name]) }}">
+                                {{ ' '.join([product.sku, product.name, product.id_from_source, product.price_for_ref|string]) }}
+                                </option>
+                              {% endfor %}
+                            </select>
+                          </div>
+                        </td>
+                        <td>
+                          <div class="input-group">
+                            <input class="form-control" type="number" min="0" max="999999" value="0">
+                          </div>
+                        </td>
+                        <td>
+                          <div class="input-group">
+                            <input class="form-control" placeholder="如: 3.12" type="number" step="0.01" min="0.00" max="9999999.99" value="0.00">
+                          </div>
+                        </td>
+                        <td>
+                          <a href="#" onClick="$(this).parents('tr').first().remove();">
+                            <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+                          </a>
+                        </td>
+                      </tr>
+                      </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
           </div>
           <div class="modal-footer">
+              <button class="btn btn-success add-suborder">添加订单详情</button>
               <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
               <button class="form-submit btn btn-primary" type="submit">保存</button>
           </div>

@@ -11,11 +11,6 @@ footer {
   text-align: center;
 }
 
-.sidebar {
-  overflow: hidden;
-  transition: all 0.25s ease-out 0s;
-}
-
 #main-container {
   min-height: 760px;
   text-align: center;
@@ -23,9 +18,28 @@ footer {
 
 table td {
   text-align: left;
- 
 }
 
 .form .form-error {
   text-align: left;
 }
+
+#suborders {
+
+}
+
+.suborder {
+  margin-left: 100px;
+  margin-right: 100px;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  padding: 15px;
+  border-style: dashed;
+  border-width: 2px;
+  border-color: #286090;
+}
+
+.example {
+  display: none;
+}
+
