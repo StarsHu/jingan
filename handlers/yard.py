@@ -23,19 +23,20 @@ class YardPageListHandler(BaseHandler):
         if self.query:
             q = '.*%s.*' % self.query
             query = query & (
-                Q({"name": {'$regex': q}})
+                Q({"source": {'$regex': q}})
+                | Q({"name": {'$regex': q}})
                 | Q({"region": {'$regex': q}})
                 | Q({"phone": {'$regex': q}})
                 | Q({"address": {'$regex': q}})
             )
         qs = Yard.objects.filter(query).order_by('create_at',
                                                  direction=DESCENDING)
-        total = yield qs.count()
         if self.page:
             skip = self.count_per_page * (self.page - 1)
             limit = self.count_per_page
             qs = qs.skip(skip).limit(limit)
         yards = yield qs.find_all()
+        total = yield Yard.objects.filter(query).count()
         self.context['total'] = total / self.count_per_page
         self.context['yards'] = yards
         self.render('yard_list.html', **self.context)

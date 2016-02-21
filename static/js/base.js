@@ -71,6 +71,12 @@ function addItem(table) {
   example.clone().removeClass('example').appendTo(table);
 }
 
+function sum(tr) {
+  var count = tr.find("input[name='count']").first().val();
+  var price = tr.find("input[name='price']").first().val();
+  tr.find(".sum").html(count * price);
+}
+
 $(function () {
   $('.form').each(function() {
     formInit($(this));
@@ -114,8 +120,34 @@ $(function () {
 
       errBlock.parents('.form-group').removeClass('has-error');
       errBlock.text('');
-      var data = form.serialize();
-      alert(data);
+      var data = {};
+      data._xsrf = form.find("input[name='_xsrf']").val();
+      data.source = form.find("select[name='source']").val();
+      data.seller = form.find("input[name='seller']").val();
+      data.yard_id = form.find("select[name='yard_id']").val();
+      data.deliver_at = form.find("input[name='deliver_at']").val();
+      data.suborders = new Array();
+      form.find(".suborder").each(function(){
+        var suborder = $(this);
+        if (!suborder.hasClass("example")) {
+          var order = {}
+          order.id_from_source = suborder.find("input[name='id_from_source']").val();
+          order.warehouse_from_source = suborder.find("input[name='warehouse_from_source']").val();
+          order.items = new Array();
+          suborder.find(".item").each(function() {
+            var subitem = $(this);
+            if (!subitem.hasClass("example")) {
+              var item = {};
+              item.product_id = subitem.find("select[name='product_id']").val();
+              item.count = subitem.find("input[name='count']").val();
+              item.price = subitem.find("input[name='price']").val();
+              order.items.push(item);
+            }
+          });
+          data.suborders.push(order);
+        }
+      });
+      data.suborders = JSON.stringify(data.suborders);
       $.post(uri, data, function(data, textStatus, jqXHR) {
         if (data.errors) {
           var error = data.errors[0];
@@ -130,5 +162,4 @@ $(function () {
     }
     return false;
   });
-
 });

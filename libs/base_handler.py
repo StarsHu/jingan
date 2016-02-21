@@ -42,11 +42,11 @@ class BaseHandler(RequestHandler):
     errors = list()
 
     SOURCE_LIST_DISPLAY = {
-        'JINGDO': '京东',
-        'TMALL': '天猫',
-        'SUNING': '苏宁',
-        'YIHAODIAN': '一号店',
-        'FEINIU': '飞牛',
+        '京东': '京东',
+        '天猫': '天猫',
+        '苏宁': '苏宁',
+        '一号店': '一号店',
+        '飞牛': '飞牛',
     }
 
     @classmethod
@@ -69,9 +69,10 @@ class BaseHandler(RequestHandler):
                 user_id = str(auth_cookie, 'utf-8')
                 if user_id:
                     user = yield User.objects.get(ObjectId(user_id))
-                    user.last_login = datetime.datetime.now()
-                    self.current_user = user
-                    user.save()
+                    if user:
+                        user.last_login = datetime.datetime.now()
+                        self.current_user = user
+                        user.save()
             except Exception as e:
                 self.logger.info(e)
         try:

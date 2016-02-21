@@ -10,6 +10,19 @@
 </form>
 {% endmacro %}"
 
+{% macro editable_form_edit_date(name, url, xsrf, current=None) %}
+<form class="form form-inline form-editable" data-toggle="validator" role="form" method="POST" action="{{ url }}" onSubmit="return false;">
+  {{ xsrf }}
+  <div class="form-group">
+    <input class="form-control input-sm datetimepicker" name="{{ name }}" style="padding-right: 24px;" data-date-format="yyyy-mm-dd" value="{{ current }}" required readonly> 
+  </div>
+  <div class="form-group">
+    <button class="btn btn-primary btn-sm" type="button" onclick="formAjaxSubmit($(this))"><i class="glyphicon glyphicon-ok"></i></button>
+  </div>
+</form>
+{% endmacro %}"
+
+
 
 {% macro editable_form_select(name, url, items, xsrf, current=None) %}
 <form class="form form-inline form-editable" data-toggle="validator" role="form" method="POST" action="{{ url }}">
@@ -77,9 +90,9 @@
           <div class="input-group">
             <input type="text" placeholder="搜索" class="form-control" id="searchQuery" value="{{ q }}">
             <div class="input-group-addon">
-              <a class="btn-link" style="cursor:pointer;" type="submit" >
+              <button class="btn-link" style="cursor:pointer;" type="submit" >
                 <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
-              </a>
+              </button>
             </div>
           </div>
         </form>

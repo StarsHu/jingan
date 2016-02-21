@@ -9,7 +9,7 @@ import settings
 
 class BaseDoc(Document):
 
-    SOURCE_LIST = ['JINGDO', 'TMALL', 'SUNING', 'YIHAODIAN', 'FEINIU']
+    SOURCE_LIST = ['京东', '天猫', '苏宁', '一号店', '飞牛']
 
     STATUS_LIST = ['ERROR', 'ACTIVE', 'DELETED']
 

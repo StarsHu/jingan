@@ -25,14 +25,13 @@ class UserPageListHandler(BaseHandler):
             query = query & Q({"name": {'$regex': q}})
         qs = User.objects.filter(query).order_by('create_at',
                                                  direction=DESCENDING)
-        total = yield qs.count()
         if self.page:
             skip = self.count_per_page * (self.page - 1)
             limit = self.count_per_page
             qs = qs.skip(skip).limit(limit)
         users = yield qs.find_all()
         roles = yield Role.objects.find_all()
-
+        total = yield User.objects.filter(query).count()
         self.context['total'] = total / self.count_per_page
         self.context['users'] = users
         self.context['roles_display'] = {r.key: r.name for r in roles}

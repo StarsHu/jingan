@@ -30,12 +30,12 @@ class ProductPageListHandler(BaseHandler):
             )
         qs = Product.objects.filter(query).order_by('create_at',
                                                     direction=DESCENDING)
-        total = yield qs.count()
         if self.page:
             skip = self.count_per_page * (self.page - 1)
             limit = self.count_per_page
             qs = qs.skip(skip).limit(limit)
         products = yield qs.find_all()
+        total = yield Product.objects.filter(query).count()
         self.context['total'] = total / self.count_per_page
         self.context['products'] = products
         self.render('product_list.html', **self.context)

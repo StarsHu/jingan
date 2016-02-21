@@ -77,29 +77,34 @@ class Yard(BaseDoc):
     address = fields.StringField(db_field='address', max_length=200,
                                  required=True, default='')
 
+class Item(BaseDoc):
+    __collection__ = 'item'
+
+    product = fields.EmbeddedDocumentField(embedded_document_type=Product)
+    count = fields.IntField(min_value=0)
+    price = fields.DecimalField(min_value=0)
+
+
+class Suborder(BaseDoc):
+    __collection__ = 'suborder'
+
+    id_from_source = fields.StringField(
+        db_field='id_from_source', max_length=100, required=True)
+    warehouse_from_source = fields.StringField(
+        db_field='warehouse_from_source', max_length=100, required=True)
+    items = fields.ListField(
+        fields.EmbeddedDocumentField(embedded_document_type=Item))
+
 
 class Order(BaseDoc):
-    '''
-    the sub_orders format:
-        [
-            {
-                id_from_source: String,
-                warehouse_from_source: String,
-                items: {
-                    "product": Product,
-                    "count": Int,
-                    "price": Decimal,
-                }
-            }
-        ...
-        ]
-    '''
-
     __collection__ = 'order'
 
     source = fields.StringField(db_field='source', max_length=20, required=True)
     seller = fields.StringField(db_field='seller', max_length=20, required=True)
     yard = fields.EmbeddedDocumentField(embedded_document_type=Yard)
     deliver_at = DateField(db_field='deliver_at', required=False)
-    sub_orders = fields.JsonField(db_field='sub_orders', required=True,
-                                  default=dict())
+    #sub_orders = fields.JsonField(db_field='sub_orders', required=True,
+    #                              default=dict())
+    suborders = fields.ListField(
+        fields.EmbeddedDocumentField(embedded_document_type=Suborder))
+

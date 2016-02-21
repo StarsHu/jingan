@@ -1,6 +1,6 @@
 {% extends "base/layout.html" %}
 
-{% import 'base/macro.html' as macros %}
+{% import 'base/macro.html' as macros with context %}
 
 {% block main %}
   <div class="modal fade" id="createOrder" tabindex="-1" role="dialog" aria-labelledby="createOrder">
@@ -33,11 +33,13 @@
               <label for="yard_id" class="col-sm-3 control-label">收货人</label>
               <div class="input-group col-sm-4">
                 <select class="form-control selectpicker show-tick" name="yard_id" data-live-search="true">
+                  {% if yards %}
                   {% for yard in yards %}
-                    <option value={{ yard._id }} title="{{ ' '.join([handler.SOURCE_LIST_DISPLAY[yard.source], yard.region, yard.name, yard.phone]) }}">
-                    {{ ' '.join([handler.SOURCE_LIST_DISPLAY[yard.source], yard.region, yard.name, yard.phone, yard.address]) }}
+                    <option value={{ yard._id }} title="{{ ' '.join([handler.SOURCE_LIST_DISPLAY.get(yard.source), yard.region, yard.name, yard.phone]) }}">
+                    {{ ' '.join([handler.SOURCE_LIST_DISPLAY.get(yard.source), yard.region, yard.name, yard.phone, yard.address]) }}
                     </option>
                   {% endfor %}
+                  {% endif %}
                 </select>
               </div>
             </div>
@@ -78,6 +80,7 @@
                         <th>商品名称</th>
                         <th>数量</th>
                         <th>单价</th>
+                        <th style="min-width:60px">总价</th>
                         <th>
                           <a href="#" onClick="addItem($(this).parents('table').first());">
                             <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
@@ -91,7 +94,7 @@
                           <div class="input-group">
                             <select class="form-control selectpicker show-tick" name="product_id" data-live-search="true">
                               {% for product in products %}
-                                <option value={{ product._id }} title="{{ ' '.join([product.sku, product.name]) }}">
+                              <option value={{ product._id }} title="{{ ' '.join([product.sku, product.name, '￥' + product.price_for_ref|string]) }}">
                                 {{ ' '.join([product.sku, product.name, product.id_from_source, product.price_for_ref|string]) }}
                                 </option>
                               {% endfor %}
@@ -100,14 +103,15 @@
                         </td>
                         <td>
                           <div class="input-group">
-                            <input class="form-control" type="number" min="0" max="999999" value="0">
+                            <input class="form-control" type="number" name="count" min="0" max="999999" value="0" onchange="sum($(this).parents('tr'));">
                           </div>
                         </td>
                         <td>
                           <div class="input-group">
-                            <input class="form-control" placeholder="如: 3.12" type="number" step="0.01" min="0.00" max="9999999.99" value="0.00">
+                            <input class="form-control" placeholder="如: 3.12" type="number" name="price" step="0.01" min="0.00" max="9999999.99" value="0.00" onchange="sum($(this).parents('tr'));">
                           </div>
                         </td>
+                        <td><strong>￥</strong><span class="sum">0.00</span></td>
                         <td>
                           <a href="#" onClick="$(this).parents('tr').first().remove();">
                             <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
@@ -143,7 +147,7 @@
       </thead>
       <tbody>
         {% for order in orders %}
-          <tr data-index={{order._id}}>
+        <tr data-index={{order._id}} data-toggle="collapse" href="#order_detail_{{order._id}}" aria-expanded="false" aria-controls="order_detail_{{order._id}}">
             <td>
               <a tabindex="0" role="button" data-toggle="popover" data-placement="top" data-html="true" data-content='
                 {{ macros.editable_form_select('source', '/order/update/' + order._id|string, handler.SOURCE_LIST_DISPLAY.items(), xsrf_form_html(), order.source) }}
@@ -154,14 +158,71 @@
                 {{ macros.editable_form_edit('seller', '/order/update/' + order._id|string, xsrf_form_html()) }}
                 '>{{ order.seller }}</a>
             </td>
-            <td>{{ order.yard.name }}</td>
-            <td>{{ order.deliver_at.strftime("%Y-%m-%d") }}</td>
+            <td>
+              {{ ' '.join([handler.SOURCE_LIST_DISPLAY.get(order.yard.source), order.yard.region, order.yard.name, order.yard.phone]) }}
+            </td>
+            <td>
+              <form class="form form-inline form-editable" data-toggle="validator" role="form" method="POST" action="{{ '/order/update/' + order._id|string }}" onSubmit="return false;">
+                {{ xsrf_form_html() }}
+                <div class="form-group">
+                  <input class="form-control input-sm datetimepicker" name="deliver_at" data-date-format="yyyy-mm-dd" value="{{ order.deliver_at.strftime("%Y-%m-%d") }}" required readonly> 
+                </div>
+                <div class="form-group">
+                  <button class="btn btn-primary btn-sm" type="button" onclick="formAjaxSubmit($(this))"><i class="glyphicon glyphicon-ok"></i></button>
+                </div>
+              </form>
+            </td>
             <td>
               <a tabindex="0" role="button" data-toggle="popover" data-placement="top" data-html="true" data-content='
                 {{ macros.editable_form_delete('/order/delete/' + order._id|string, xsrf_form_html()) }}
                 '><i class="glyphicon glyphicon-remove"></i></a>
             </td>
           </tr>
+          {% if order.suborders %}
+          <tr class="accordion-body collapse" id="order_detail_{{order._id}}">
+            <td colspan="5">
+              {% for suborder in order.suborders %}
+              <div class="suborder .container">
+                <div>
+                  <div style="width:49%; display:inline-block">
+                    <strong>订单号: </strong><span>{{ suborder.id_from_source }}</span>
+                  </div>
+                  <div style="width:49%; display:inline-block">
+                    <strong>仓库:  </strong><span>{{ suborder.warehouse_from_source }}</span>
+                  </div>
+                </div>
+                {% if suborder.items %}
+                {% set sum = [0] %}
+                <table class="table table-hover table-bordered" data-toggle="table">
+                  <thead>
+                    <tr>
+                      <th>商品名称</th>
+                      <th>数量</th>
+                      <th>单价</th>
+                      <th>总价</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for item in suborder.items %}
+                    <tr>
+                      <td>{{ item.product.name }}</td>
+                      <td>{{ item.count }}</td>
+                      <td><strong>￥</strong>{{ item.price }}</td>
+                      {% if sum.append(sum.pop() + item.price * item.count) %}{% endif %}
+                      <td><strong>￥</strong>{{ item.price * item.count }}</td>
+                    </tr>
+                    {% endfor %}
+                    <tr>
+                      <td colspan="5" class="text-right"><strong>合计: ￥</strong>{{ sum.pop() }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+                {% endif %}
+              </div>
+              {% endfor %}
+            </td>
+          </tr>
+          {% endif %}
         {% endfor %}
         </thead>
       {% else %}
